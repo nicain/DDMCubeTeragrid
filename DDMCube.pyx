@@ -1,0 +1,127 @@
+#  DDMCube.pyx
+#  Created by nicain on 11/1/09.
+#  Copyright (c) 2009 __MyCompanyName__. All rights reserved.
+
+# Wrapper for the RNG:
+cdef extern from "MersenneTwister.h":
+	ctypedef struct c_MTRand "MTRand":
+		double randNorm( double mean, double stddev)
+		void seed( unsigned long bigSeed[])
+
+# External math functions that are needed:
+cdef extern from "math.h":
+	float sqrt(float sqrtMe)
+	float abs(float absMe)
+
+################################################################################
+######################## Main function, the workhorse:  ########################
+################################################################################
+def DDMOU(settings, int FD,int perLoc):
+
+	# Import necessary python packages:
+	import itertools, pickle, random, uuid, os
+	from scipy import zeros
+	
+	# C initializations
+	cdef float xCurr, tCurr, yCurrP, yCurrN, C, xStd, xTau, xNoiseP, xNoiseN
+	cdef float dt, theta, crossTimes, results, chop, beta, K, yTau, A, B, yBegin, tMax, chopHat, noiseSigma
+	cdef double mean = 0, std = 1
+	cdef unsigned long mySeed[624]
+	cdef c_MTRand myTwister
+	cdef int i, overTime
+	
+	# Convert settings dictionary to iterator:
+	params = settings.keys()
+	params.sort()
+	settingsList = []
+	totalLength = 1
+	for parameter in params: 
+		settingsList.append(settings[parameter])
+		totalLength *= len(settings[parameter])
+	settingsIterator = itertools.product(*settingsList)
+	resultsArray = zeros(totalLength, dtype=float)
+	crossTimesArray = zeros(totalLength, dtype=float)
+
+	# Initialization of random number generator:
+	myUUID = uuid.uuid4()
+	random.seed(myUUID.int)
+	for i in range(624): mySeed[i] = random.randint(0,2**30)
+	myTwister.seed(mySeed)
+
+	# Parameter space loop:
+	counter = 0
+	for currentSettings in settingsIterator:
+		A, B, C, K, beta, chopHat, dt, noiseSigma, tMax, theta, xStd, xTau, yBegin, yTau = currentSettings		# Must be alphabetized, with capitol letters coming first!
+
+		xStd=sqrt(4.5*((20-.2*C) + (20+.4*C)))
+		chop = sqrt(xStd*xStd + noiseSigma*noiseSigma)*chopHat
+
+		if FD:
+			theta = 1000000000
+		crossTimes = 0
+		results = 0
+		for i in range(perLoc):
+			overTime = 0
+			tCurr = 0
+			xCurr = myTwister.randNorm(C*.6,xStd)
+			xNoiseP = myTwister.randNorm(0,noiseSigma)
+			xNoiseN = myTwister.randNorm(0,noiseSigma)
+			yCurrP = yBegin
+			yCurrN = yBegin
+			while yCurrP - yBegin < theta and yCurrN - yBegin < theta:
+				
+				# Create Input Signal
+				xCurr = xCurr+dt*(C*.6 - xCurr)/xTau + xStd*sqrt(2*dt/xTau)*myTwister.randNorm(mean,std)
+				
+				# Create Noise Signals
+				xNoiseP = xNoiseP - dt*xNoiseP/xTau + noiseSigma*sqrt(2*dt/xTau)*myTwister.randNorm(mean,std)
+				xNoiseN = xNoiseN - dt*xNoiseN/xTau + noiseSigma*sqrt(2*dt/xTau)*myTwister.randNorm(mean,std)
+				
+				# Integrate Preferred Integrator based on chop
+				if abs((xCurr+xNoiseP) + beta*yCurrP*K + B) < chop:
+					yCurrP = yCurrP
+				else:
+					yCurrP = yCurrP + dt/yTau*((xCurr+xNoiseP)/K + beta*yCurrP + A)
+
+				# Integrate Preferred Integrator based on chop				
+				if abs(-(xCurr+xNoiseN) + beta*yCurrN*K + B) < chop:
+					yCurrN = yCurrN
+				else:
+					yCurrN = yCurrN + dt/yTau*(-(xCurr+xNoiseN)/K + beta*yCurrN + A)
+				
+				# Ensure both trains remain positive
+				if yCurrP < 0:
+					yCurrP = 0
+				if yCurrN < 0:
+					yCurrN = 0
+				
+				# Update Time Step
+				tCurr=tCurr+dt
+				
+				# Check if we are over time
+				if tCurr > tMax:
+					overTime = 1
+					break
+
+			crossTimes += tCurr
+			if FD:
+				if yCurrP > yCurrN:
+					results += 1
+			else:
+				if not(overTime):
+					if yCurrP - yBegin >= theta:
+						results += 1
+				else:
+					if yCurrP > yCurrN:
+						results += 1
+				#if not(overTime) and yCurrP - yBegin >= theta:
+					#results += 1
+					
+					
+
+
+		resultsArray[counter] = results
+		crossTimesArray[counter] = crossTimes
+		counter += 1
+
+	return (resultsArray, crossTimesArray)
