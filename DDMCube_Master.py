@@ -61,7 +61,7 @@ numberOfJobs = [simsPerRep, simsPerRep*repsPerProc*procsPerNode*nodes]
 
 
 ################################################################################
-# Main function:
+# Main function: 
 ################################################################################
 
 # Set up saving directories
