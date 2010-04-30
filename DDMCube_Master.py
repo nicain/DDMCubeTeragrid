@@ -96,9 +96,8 @@ pt.runPBS('python DDMCube_Slave.py',
           ppn=procsPerNode,
 		  repspp=repsPerProc,
 		  outputDir=outputDir,
-          server='normal',
+          server=server,
           wallTime=10,
-          includeIDAsArg=1,
 		  dryRun=dryRun,
 		  localRun=localRun)
 tEnd = time.mktime(time.localtime())
