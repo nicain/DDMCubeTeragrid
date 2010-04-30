@@ -103,7 +103,7 @@ pt.runPBS('python DDMCube_Slave.py',
 tEnd = time.mktime(time.localtime())
 
 if not dryRun == 1:
-	# Collect results: 
+	# Collect results:
 	resultList = pt.getSavedVariables(['resultsArray','crossTimesArray'], outputDir = outputDir)
 	arrayLength = len(resultList[0]['resultsArray'])
 
