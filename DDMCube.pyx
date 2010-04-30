@@ -13,24 +13,13 @@ cdef extern from "math.h":
 	float sqrt(float sqrtMe)
 	float abs(float absMe)
 
-# Python 2.5 has no product method in its itertools!
-def product(*args, **kwds):
-	# product('ABCD', 'xy') --> Ax Ay Bx By Cx Cy Dx Dy
-	# product(range(2), repeat=3) --> 000 001 010 011 100 101 110 111
-	pools = map(tuple, args) * kwds.get('repeat', 1)
-	result = [[]]
-	for pool in pools:
-		result = [x+[y] for x in result for y in pool]
-	for prod in result:
-		yield tuple(prod)
-
 ################################################################################
 ######################## Main function, the workhorse:  ########################
 ################################################################################
 def DDMOU(settings, int FD,int perLoc):
 
 	# Import necessary python packages:
-	import pickle, random, uuid, os
+	import pickle, random, uuid, os, product
 	from scipy import zeros
 	
 	# C initializations
@@ -49,7 +38,7 @@ def DDMOU(settings, int FD,int perLoc):
 	for parameter in params: 
 		settingsList.append(settings[parameter])
 		totalLength *= len(settings[parameter])
-	settingsIterator = product(*settingsList)
+	settingsIterator = product.product(*settingsList)
 	resultsArray = zeros(totalLength, dtype=float)
 	crossTimesArray = zeros(totalLength, dtype=float)
 
