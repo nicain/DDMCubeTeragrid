@@ -53,9 +53,9 @@ localRun = 0						# Superceded by dryRun
 server = 'wallTimeEstimate'			# 'normal' or 'wallTimeEstimate'
 
 # Divide jobs among processing unit settings:
-nodes = 2
-procsPerNode = 3
-repsPerProc = 4
+nodes = 1
+procsPerNode = 1
+repsPerProc = 1
 simsPerRep = 5
 numberOfJobs = [simsPerRep, simsPerRep*repsPerProc*procsPerNode*nodes]
 
