@@ -102,31 +102,32 @@ pt.runPBS('python DDMCube_Slave.py',
 		  localRun=localRun)
 tEnd = time.mktime(time.localtime())
 
-# Collect results:
-resultList = pt.getSavedVariables(['resultsArray','crossTimesArray'], outputDir = outputDir)
-arrayLength = len(resultList[0]['resultsArray'])
+if not dryRun == 1:
+	# Collect results:
+	resultList = pt.getSavedVariables(['resultsArray','crossTimesArray'], outputDir = outputDir)
+	arrayLength = len(resultList[0]['resultsArray'])
 
-resultsArray = scipy.zeros(arrayLength, dtype=float)
-crossTimesArray = scipy.zeros(arrayLength, dtype=float)
-for i in range(len(resultList)):
-	resultsArray = resultsArray + resultList[i]['resultsArray']
-	crossTimesArray = crossTimesArray + resultList[i]['crossTimesArray']
+	resultsArray = scipy.zeros(arrayLength, dtype=float)
+	crossTimesArray = scipy.zeros(arrayLength, dtype=float)
+	for i in range(len(resultList)):
+		resultsArray = resultsArray + resultList[i]['resultsArray']
+		crossTimesArray = crossTimesArray + resultList[i]['crossTimesArray']
 
-crossTimesArray = crossTimesArray/numberOfJobs[1]
-resultsArray = resultsArray/numberOfJobs[1]
-			
-# Reshape results and save to output:	
-params = settings.keys()
-params.sort()
-newDims = [len(settings[parameter]) for parameter in params]
-crossTimesArray = scipy.reshape(crossTimesArray,newDims)
-resultsArray = scipy.reshape(resultsArray,newDims)
-fOut = open(join(os.getcwd(),saveResultDir,quickName + '_' + str(myUUID) + '.dat'),'w')
-pickle.dump((crossTimesArray, resultsArray, params),fOut)
-fOut.close()
+	crossTimesArray = crossTimesArray/numberOfJobs[1]
+	resultsArray = resultsArray/numberOfJobs[1]
+				
+	# Reshape results and save to output:	
+	params = settings.keys()
+	params.sort()
+	newDims = [len(settings[parameter]) for parameter in params]
+	crossTimesArray = scipy.reshape(crossTimesArray,newDims)
+	resultsArray = scipy.reshape(resultsArray,newDims)
+	fOut = open(join(os.getcwd(),saveResultDir,quickName + '_' + str(myUUID) + '.dat'),'w')
+	pickle.dump((crossTimesArray, resultsArray, params),fOut)
+	fOut.close()
 
-if localRun == 1:
-	# Display Computation Time:
-	print 'Total Computation Time: ', time.strftime("H:%H M:%M S:%S",time.gmtime(tEnd - tBegin))
-	if simsPerRep < 1000:
-		for NN in [2000,5000]: print ' Time to complete ' + str(NN) +  ' sims: ', time.strftime("H:%H M:%M S:%S",time.gmtime(NN*totalLength*(tEnd - tBegin)/(totalLength*simsPerRep)))
+	if localRun == 1:
+		# Display Computation Time:
+		print 'Total Computation Time: ', time.strftime("H:%H M:%M S:%S",time.gmtime(tEnd - tBegin))
+		if simsPerRep < 1000:
+			for NN in [2000,5000]: print ' Time to complete ' + str(NN) +  ' sims: ', time.strftime("H:%H M:%M S:%S",time.gmtime(NN*totalLength*(tEnd - tBegin)/(totalLength*simsPerRep)))
