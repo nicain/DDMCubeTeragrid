@@ -55,7 +55,7 @@ server = 'wallTimeEstimate'			# 'normal' or 'wallTimeEstimate'
 # Divide jobs among processing unit settings:
 nodes = 1
 procsPerNode = 2
-repsPerProc = 1
+repsPerProc = 2
 simsPerRep = 5
 numberOfJobs = [simsPerRep, simsPerRep*repsPerProc*procsPerNode*nodes]
 
