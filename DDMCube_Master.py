@@ -49,8 +49,8 @@ FD=0
 
 # Define type of job
 dryRun = 0
-localRun = 1		# Superceded by dryRun
-wallTimeRun = 1		# Superceded by dryRun and localRun
+localRun = 0						# Superceded by dryRun
+server = 'wallTimeEstimate'			# 'normal' or 'wallTimeEstimate'
 
 # Divide jobs among processing unit settings:
 nodes = 1
@@ -101,7 +101,6 @@ pt.runPBS('python DDMCube_Slave.py',
           includeIDAsArg=1,
 		  dryRun=dryRun,
 		  localRun=localRun)
-
 tEnd = time.mktime(time.localtime())
 
 # Collect results:
