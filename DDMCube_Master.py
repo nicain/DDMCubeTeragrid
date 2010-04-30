@@ -102,10 +102,9 @@ pt.runPBS('python DDMCube_Slave.py',
 		  localRun=localRun)
 tEnd = time.mktime(time.localtime())
 
-if not dryRun == 1:
+if not dryRun == 1 and not server=='wallTimeEstimate':
 	# Collect results:
 	resultList = pt.getSavedVariables(['resultsArray','crossTimesArray'], outputDir = outputDir)
-	print resultList
 	arrayLength = len(resultList[0]['resultsArray'])
 
 	resultsArray = scipy.zeros(arrayLength, dtype=float)
