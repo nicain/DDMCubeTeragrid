@@ -34,7 +34,7 @@ settings={									# Example values:
 'dt':list(scipy.linspace(.1,.1,1)),		# .02
 'K':list(scipy.linspace(9,10.5,1)),		# 20
 'tMax':list(scipy.linspace(2000,1000,1)),	# 2000, or 400->600 in FD paradigm
-'theta':list(scipy.linspace(1,100,41)),		# 10
+'theta':list(scipy.linspace(1,100,2)),		# 10
 'C':[6.4],#(3.2*scipy.concatenate([[0],2**scipy.linspace(0,4,5)])),  #[0,3.2,6.4,12.8,25.6,51.2],#list(scipy.linspace(0,20,7)),		# Now units of C
 'xStd':list(scipy.linspace(0,15,1)),		# 12.8; 0 means set in DDMCube as 4.46*Mean
 'xTau':list(scipy.linspace(20,25,1)),		# 20
