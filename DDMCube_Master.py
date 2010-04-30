@@ -49,7 +49,7 @@ FD=0
 
 # Define type of job
 dryRun = 0
-localRun = 0						# Superceded by dryRun
+localRun = 1						# Superceded by dryRun
 server = 'wallTimeEstimate'			# 'normal' or 'wallTimeEstimate'
 
 # Divide jobs among processing unit settings:
