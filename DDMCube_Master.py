@@ -105,6 +105,7 @@ tEnd = time.mktime(time.localtime())
 if not dryRun == 1:
 	# Collect results:
 	resultList = pt.getSavedVariables(['resultsArray','crossTimesArray'], outputDir = outputDir)
+	print resultList
 	arrayLength = len(resultList[0]['resultsArray'])
 
 	resultsArray = scipy.zeros(arrayLength, dtype=float)
