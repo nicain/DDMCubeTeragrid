@@ -53,10 +53,10 @@ localRun = 1						# Superceded by dryRun
 server = 'wallTimeEstimate'			# 'normal' or 'wallTimeEstimate'
 
 # Divide jobs among processing unit settings:
-nodes = 1
+nodes = 2
 procsPerNode = 1
 repsPerProc = 2
-simsPerRep = 2
+simsPerRep = 4
 numberOfJobs = [simsPerRep, simsPerRep*repsPerProc*procsPerNode*nodes]
 
 
@@ -76,14 +76,7 @@ for parameter in settings:
 	thisSetting = settings[parameter]
 	totalLength *= len(thisSetting)
 settingsFileName = join(os.getcwd(), saveResultDir, quickName + '_' + str(myUUID) + '.settings')
-fOutSet = open(settingsFileName,'w')	
-pickle.dump((settings, FD, numberOfJobs, gitVersion),fOutSet)
-fOutSet.close()
-
-# Write file containing the name of the settings file, for the subordinate jobs:
-fOut = open('nameOfCurrentSettingsFile.dat','w')
-fOut.write('nameOfCurrentSettingsFile = "' + os.path.abspath(settingsFileName) + '"')
-fOut.close()
+pt.pickle((settings, FD, numberOfJobs, gitVersion), saveFileName = settingsFileName)
 
 # Display settings:
 at.printSettings(quickName, saveResultDir)
@@ -91,7 +84,7 @@ at.printSettings(quickName, saveResultDir)
 # Run the job:
 tBegin = time.mktime(time.localtime())
 pt.runPBS('python DDMCube_Slave.py',
-          ['DDMCube_Slave.py', 'nameOfCurrentSettingsFile.dat', 'DDMCube.so'],
+          ['DDMCube_Slave.py', settingsFileName, 'DDMCube.so'],
           nodes=nodes,
           ppn=procsPerNode,
 		  repspp=repsPerProc,
@@ -104,7 +97,7 @@ tEnd = time.mktime(time.localtime())
 
 if not dryRun == 1 and not server=='wallTimeEstimate':
 	# Collect results:
-	resultList = pt.getSavedVariables(['resultsArray','crossTimesArray'], outputDir = outputDir)
+	resultList = pt.getFromPickleJar(loadDir = outputDir, fileNameSubString = 'simResults.dat')
 	arrayLength = len(resultList[0]['resultsArray'])
 
 	resultsArray = scipy.zeros(arrayLength, dtype=float)

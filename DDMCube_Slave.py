@@ -11,23 +11,18 @@
 ################################################################################
 
 # Import packages:
-import DDMCube, pickle
+import DDMCube
 import analysisTools as at
 import pbsTools as pt
 
-# Grab the name of the settings file, for this run:
-execfile('nameOfCurrentSettingsFile.dat')
-
-# Load up the settings:
-fIn = open(nameOfCurrentSettingsFile,'r')
-(settings, FD, numberOfJobs, gitVersion) = pickle.load(fIn)
-fIn.close()
+# Grab the name of the settings for the run:
+settings, FD, numberOfJobs, gitVersion = pt.getFromPickleJar(loadDir = './', fileNameSubString = '.settings')[0]
 
 # Run the sims:
 (resultsArray, crossTimesArray) = DDMCube.DDMOU(settings, FD, numberOfJobs[0])
 
 # Save output:
-pt.saveToFile({'resultsArray':resultsArray,'crossTimesArray':crossTimesArray})
+pt.pickle((resultsArray, crossTimesArray),saveFileName = 'simResults.dat')
 
 
 
