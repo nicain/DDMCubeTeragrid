@@ -27,6 +27,8 @@ call('python setup.py build_ext --inplace', shell=True)
 # Import settings:
 execfile('DDMCube_Settings.py')
 outputDir = '.batchSimResults'
+quickNameSuffix = os.environ['JOBLOCATION']
+saveResultDir = 'savedResults-' + quickNameSuffix
 
 # Beginning computation:
 quickName = quickNamePrefix + '-' + quickNameSuffix
