@@ -19,8 +19,8 @@ cdef extern from "math.h":
 def DDMOU(settings, int FD,int perLoc):
 
 	# Import necessary python packages:
-	import pickle, random, uuid, os, product
-	from scipy import zeros
+	import random, uuid, os, product
+	from numpy import zeros
 	
 	# C initializations
 	cdef float xCurr, tCurr, yCurrP, yCurrN, C, xStd, xTau, xNoiseP, xNoiseN

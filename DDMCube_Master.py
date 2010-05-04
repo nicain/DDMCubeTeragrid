@@ -13,7 +13,7 @@
 # Import packages:
 from subprocess import call as call
 from os.path import join as join, abspath as abspath
-import scipy, random, time, os, pickle, uuid
+import numpy, random, time, os, pickle, uuid
 import analysisTools as at
 import pbsTools as pt
 
@@ -64,8 +64,8 @@ if not dryRun == 1 and not server=='wallTimeEstimate':
 	resultList = pt.getFromPickleJar(loadDir = outputDir, fileNameSubString = 'simResults.dat')
 	arrayLength = len(resultList[0][0])
 
-	resultsArray = scipy.zeros(arrayLength, dtype=float)
-	crossTimesArray = scipy.zeros(arrayLength, dtype=float)
+	resultsArray = numpy.zeros(arrayLength, dtype=float)
+	crossTimesArray = numpy.zeros(arrayLength, dtype=float)
 	for i in range(len(resultList)):
 		resultsArray = resultsArray + resultList[i][0]
 		crossTimesArray = crossTimesArray + resultList[i][1]
@@ -77,8 +77,8 @@ if not dryRun == 1 and not server=='wallTimeEstimate':
 	params = settings.keys()
 	params.sort()
 	newDims = [len(settings[parameter]) for parameter in params]
-	crossTimesArray = scipy.reshape(crossTimesArray,newDims)
-	resultsArray = scipy.reshape(resultsArray,newDims)
+	crossTimesArray = numpy.reshape(crossTimesArray,newDims)
+	resultsArray = numpy.reshape(resultsArray,newDims)
 	fOut = open(join(os.getcwd(),saveResultDir,quickName + '_' + str(myUUID) + '.dat'),'w')
 	pickle.dump((crossTimesArray, resultsArray, params),fOut)
 	fOut.close()
