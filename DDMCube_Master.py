@@ -62,13 +62,13 @@ tEnd = time.mktime(time.localtime())
 if not dryRun == 1 and not server=='wallTimeEstimate':
 	# Collect results:
 	resultList = pt.getFromPickleJar(loadDir = outputDir, fileNameSubString = 'simResults.dat')
-	arrayLength = len(resultList[0]['resultsArray'])
+	arrayLength = len(resultList[0][0])
 
 	resultsArray = scipy.zeros(arrayLength, dtype=float)
 	crossTimesArray = scipy.zeros(arrayLength, dtype=float)
 	for i in range(len(resultList)):
-		resultsArray = resultsArray + resultList[i]['resultsArray']
-		crossTimesArray = crossTimesArray + resultList[i]['crossTimesArray']
+		resultsArray = resultsArray + resultList[i][0]
+		crossTimesArray = crossTimesArray + resultList[i][1]
 
 	crossTimesArray = crossTimesArray/numberOfJobs[1]
 	resultsArray = resultsArray/numberOfJobs[1]
