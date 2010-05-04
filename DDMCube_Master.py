@@ -1,4 +1,4 @@
-# 
+#       
 #  DDMCubeTeraGrid_Master.py
 #  DDMCubeTeraGrid
 #
@@ -56,7 +56,7 @@ pt.runPBS('python DDMCube_Slave.py',
 		  repspp=repsPerProc,
 		  outputDir=outputDir,
           server=server,
-          wallTime=10,
+          wallTime=wallTime,
 		  dryRun=dryRun,
 		  localRun=localRun)
 tEnd = time.mktime(time.localtime())
