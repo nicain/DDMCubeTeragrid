@@ -13,14 +13,15 @@ outputDir = sys.argv[1]
 settingsFile = sys.argv[2]
 
 # Read back recovery details to user:
-print 'Recovering job: ' + str(settingsFile) + ' from: ' + str(outputDir)
+print 'Recovering job: ' + str(settingsFile)
+print '  From directory: ' + str(outputDir)
 
 # Get settings from the environment:
 quickNameSuffix = os.environ['JOBLOCATION']
 saveResultDir = 'savedResults-' + quickNameSuffix
 
 # Grab the name of the settings for the run:
-settings, FD, numberOfJobs, gitVersion = pt.unpickle(os.path.join(saveResultDir,settingsFile))
+settings, FD, numberOfJobs, gitVersion = pt.unpickle(os.path.join(os.getcwd(),saveResultDir,settingsFile))
 
 # Save the day:
 resultList = pt.getFromPickleJar(loadDir = outputDir, fileNameSubString = 'simResults.dat')
