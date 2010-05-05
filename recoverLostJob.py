@@ -20,16 +20,6 @@ print '  From directory: ' + str(outputDir)
 # Get settings from the environment:
 quickNameSuffix = os.environ['JOBLOCATION']
 saveResultDir = 'savedResults-' + quickNameSuffix
-if quickNameSuffix == 'Booboo' or localRun == 1:
-	user='nicain'
-	runLocation = 'local'
-elif quickNameSuffix == 'Abe':
-	user='ncain'
-	runLocation = 'abe'
-elif quickNameSuffix == 'Steele':
-	user='cainn'
-	runLocation = 'steele'
-quickName = quickNamePrefix + '-' + quickNameSuffix
 
 # Grab the name of the settings for the run:
 print os.path.join(os.getcwd(),saveResultDir,settingsFile)
