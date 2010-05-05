@@ -36,10 +36,6 @@ elif quickNameSuffix == 'Steele':
 # Grab the name of the settings for the run:
 print os.path.join(os.getcwd(),saveResultDir,settingsFile)
 settings, FD, numberOfJobs, gitVersion = pt.unpickle(os.path.join(os.getcwd(),saveResultDir,settingsFile))
-print settings
-
-# Push necessary settings out of settings dictionary:
-quickName = settings['quickName']
 
 # Save the day:
 resultList = pt.getFromPickleJar(loadDir = outputDir, fileNameSubString = 'simResults.dat')
