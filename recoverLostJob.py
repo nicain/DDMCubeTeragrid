@@ -7,6 +7,7 @@
 #
 import pbsTools as pt
 import sys, numpy, os
+from os.path import join as join, abspath as abspath
 
 # Get details from input:
 outputDir = sys.argv[1]
