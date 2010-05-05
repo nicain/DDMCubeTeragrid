@@ -31,6 +31,8 @@ elif quickNameSuffix == 'Abe':
 elif quickNameSuffix == 'Steele':
 	user='cainn'
 	runLocation = 'steele'
+quickName = quickNamePrefix + '-' + quickNameSuffix
+numberOfJobs = [simsPerRep, simsPerRep*repsPerProc*procsPerNode*nodes]
 
 # Grab the name of the settings for the run:
 print os.path.join(os.getcwd(),saveResultDir,settingsFile)
