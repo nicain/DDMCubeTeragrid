@@ -21,6 +21,7 @@ quickNameSuffix = os.environ['JOBLOCATION']
 saveResultDir = 'savedResults-' + quickNameSuffix
 
 # Grab the name of the settings for the run:
+print os.path.join(os.getcwd(),saveResultDir,settingsFile)
 settings, FD, numberOfJobs, gitVersion = pt.unpickle(os.path.join(os.getcwd(),saveResultDir,settingsFile))
 
 # Save the day:
