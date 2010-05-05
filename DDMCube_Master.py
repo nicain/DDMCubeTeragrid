@@ -29,7 +29,7 @@ execfile('DDMCube_Settings.py')
 outputDir = '.batchSimResults'
 quickNameSuffix = os.environ['JOBLOCATION']
 saveResultDir = 'savedResults-' + quickNameSuffix
-if quickNameSuffix == 'Booboo':
+if quickNameSuffix == 'Booboo' or localRun == 1:
 	runLocation = 'local'
 elif quickNameSuffix == 'Abe':
 	runLocation = 'abe'
