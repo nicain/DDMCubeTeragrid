@@ -13,7 +13,7 @@ outputDir = sys.argv[1]
 settingsFileName = sys.argv[1]
 
 # Read back recovery details to user:
-print 'Recovering job: ' + str(settingsFileName) ' from: ' + str(outputDir)
+print 'Recovering job: ' + str(settingsFileName) + ' from: ' + str(outputDir)
 
 # Get settings from the environment:
 quickNameSuffix = os.environ['JOBLOCATION']
