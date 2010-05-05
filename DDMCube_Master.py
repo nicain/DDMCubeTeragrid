@@ -58,7 +58,8 @@ pt.runPBS('python DDMCube_Slave.py',
           server=server,
           wallTime=wallTime,
 		  dryRun=dryRun,
-		  localRun=localRun)
+		  localRun=localRun,
+		  wallTimeEstCount=wallTimeEstCount)
 tEnd = time.mktime(time.localtime())
 
 if not dryRun == 1 and not server=='wallTimeEstimate':
