@@ -6,7 +6,7 @@
 #  Copyright (c) 2010 __MyCompanyName__. All rights reserved.
 #
 import pbsTools as pt
-import sys, numpy, os
+import sys, numpy, os, pickle
 from os.path import join as join, abspath as abspath
 
 # Get details from input:
