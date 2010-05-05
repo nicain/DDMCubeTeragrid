@@ -92,7 +92,7 @@ if not dryRun == 1 and not runType == 'wallTimeEstimate':
 	pickle.dump((crossTimesArray, resultsArray, params),fOut)
 	fOut.close()
 
-	# Display Computation Time:
-	print 'Total Computation Time: ', time.strftime("H:%H M:%M S:%S",time.gmtime(tEnd - tBegin))
-	if simsPerRep < 1000:
-		for NN in [2000,5000]: print ' Time to complete ' + str(NN) +  ' sims: ', time.strftime("H:%H M:%M S:%S",time.gmtime(NN*totalLength*(tEnd - tBegin)/(totalLength*simsPerRep)))
+# Display Computation Time:
+print 'Total Computation Time: ', time.strftime("H:%H M:%M S:%S",time.gmtime(tEnd - tBegin))
+if simsPerRep < 1000:
+	for NN in [2000,5000]: print ' Time to complete ' + str(NN) +  ' sims: ', time.strftime("H:%H M:%M S:%S",time.gmtime(NN*totalLength*(tEnd - tBegin)/(totalLength*simsPerRep)))
