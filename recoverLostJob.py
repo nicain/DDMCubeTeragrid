@@ -10,7 +10,7 @@ import sys, numpy, os
 
 # Get details from input:
 outputDir = sys.argv[1]
-settingsFileName = sys.argv[1]
+settingsFileName = sys.argv[2]
 
 # Read back recovery details to user:
 print 'Recovering job: ' + str(settingsFileName) + ' from: ' + str(outputDir)
