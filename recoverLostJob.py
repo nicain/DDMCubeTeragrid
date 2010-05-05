@@ -19,7 +19,7 @@ print '  From directory: ' + str(outputDir)
 
 # Split off uuid fomr settingFile:
 jobQuickNameIn, currentSuffix = settingsFile.split('_')
-myUUID, trash = currentSuffix.split('_')
+myUUID, trash = currentSuffix.split('.')
 
 # Import settings:
 execfile('DDMCube_Settings.py')
