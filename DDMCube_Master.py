@@ -30,10 +30,13 @@ outputDir = '.batchSimResults'
 quickNameSuffix = os.environ['JOBLOCATION']
 saveResultDir = 'savedResults-' + quickNameSuffix
 if quickNameSuffix == 'Booboo' or localRun == 1:
+	user='nicain'
 	runLocation = 'local'
 elif quickNameSuffix == 'Abe':
+	user='ncain'
 	runLocation = 'abe'
 elif quickNameSuffix == 'Steele':
+	user='cainn'
 	runLocation = 'steele'
 
 # Beginning computation:
@@ -65,7 +68,8 @@ pt.runPBS('python DDMCube_Slave.py',
 		  runType=runType,
           wallTime=wallTime,
 		  dryRun=dryRun,
-		  wallTimeEstCount=wallTimeEstCount)
+		  wallTimeEstCount=wallTimeEstCount,
+		  user=user)
 tEnd = time.mktime(time.localtime())
 
 if not dryRun == 1 and not runType == 'wallTimeEstimate':
