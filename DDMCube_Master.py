@@ -29,6 +29,12 @@ execfile('DDMCube_Settings.py')
 outputDir = '.batchSimResults'
 quickNameSuffix = os.environ['JOBLOCATION']
 saveResultDir = 'savedResults-' + quickNameSuffix
+if quickNameSuffix == 'Booboo':
+	runLocation = 'local'
+elif quickNameSuffix == 'Abe':
+	runLocation = 'abe'
+elif quickNameSuffix == 'Steele':
+	runLocation = 'steele'
 
 # Beginning computation:
 quickName = quickNamePrefix + '-' + quickNameSuffix
@@ -55,14 +61,14 @@ pt.runPBS('python DDMCube_Slave.py',
           ppn=procsPerNode,
 		  repspp=repsPerProc,
 		  outputDir=outputDir,
-          server=server,
+          runLocation=runLocation,
+		  runType=runType,
           wallTime=wallTime,
 		  dryRun=dryRun,
-		  localRun=localRun,
 		  wallTimeEstCount=wallTimeEstCount)
 tEnd = time.mktime(time.localtime())
 
-if not dryRun == 1 and not server=='wallTimeEstimate':
+if not dryRun == 1 and not runType == 'wallTimeEstimate':
 	# Collect results:
 	resultList = pt.getFromPickleJar(loadDir = outputDir, fileNameSubString = 'simResults.dat')
 	arrayLength = len(resultList[0][0])
@@ -86,8 +92,7 @@ if not dryRun == 1 and not server=='wallTimeEstimate':
 	pickle.dump((crossTimesArray, resultsArray, params),fOut)
 	fOut.close()
 
-	if localRun == 1:
-		# Display Computation Time:
-		print 'Total Computation Time: ', time.strftime("H:%H M:%M S:%S",time.gmtime(tEnd - tBegin))
-		if simsPerRep < 1000:
-			for NN in [2000,5000]: print ' Time to complete ' + str(NN) +  ' sims: ', time.strftime("H:%H M:%M S:%S",time.gmtime(NN*totalLength*(tEnd - tBegin)/(totalLength*simsPerRep)))
+	# Display Computation Time:
+	print 'Total Computation Time: ', time.strftime("H:%H M:%M S:%S",time.gmtime(tEnd - tBegin))
+	if simsPerRep < 1000:
+		for NN in [2000,5000]: print ' Time to complete ' + str(NN) +  ' sims: ', time.strftime("H:%H M:%M S:%S",time.gmtime(NN*totalLength*(tEnd - tBegin)/(totalLength*simsPerRep)))
