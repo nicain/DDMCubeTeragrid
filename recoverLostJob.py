@@ -20,7 +20,6 @@ print '  From directory: ' + str(outputDir)
 # Get settings from the environment:
 # Import settings:
 execfile('DDMCube_Settings.py')
-outputDir = '.batchSimResults'
 quickNameSuffix = os.environ['JOBLOCATION']
 saveResultDir = 'savedResults-' + quickNameSuffix
 if quickNameSuffix == 'Booboo' or localRun == 1:
