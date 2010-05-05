@@ -17,7 +17,10 @@ settingsFile = sys.argv[2]
 print 'Recovering job: ' + str(settingsFile)
 print '  From directory: ' + str(outputDir)
 
-# Get settings from the environment:
+# Split off uuid fomr settingFile:
+jobQuickNameIn, currentSuffix = settingsFile.split('_')
+myUUID, trash = currentSuffix.split('_')
+
 # Import settings:
 execfile('DDMCube_Settings.py')
 quickNameSuffix = os.environ['JOBLOCATION']
@@ -33,6 +36,11 @@ elif quickNameSuffix == 'Steele':
 	runLocation = 'steele'
 quickName = quickNamePrefix + '-' + quickNameSuffix
 numberOfJobs = [simsPerRep, simsPerRep*repsPerProc*procsPerNode*nodes]
+
+# Match incoming quickName against that from the settings file:
+if not jobQuickNameIn == quickName:
+	print 'Quicknames fomr input file and settings file dont match; aborting'
+	sys.exit()
 
 # Grab the name of the settings for the run:
 print os.path.join(os.getcwd(),saveResultDir,settingsFile)
