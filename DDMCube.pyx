@@ -23,7 +23,7 @@ def DDMOU(settings, int FD,int perLoc):
 	from numpy import zeros
 	
 	# C initializations
-	cdef float xCurr, tCurr, yCurrP, yCurrN, C, xStd, xTau, xNoiseP, xNoiseN
+	cdef float xCurr, tCurr, yCurrP, yCurrN, C, xStd, xTau, xNoise
 	cdef float dt, theta, crossTimes, results, chop, beta, K, yTau, A, B, yBegin, tMax, chopHat, noiseSigma
 	cdef double mean = 0, std = 1
 	cdef unsigned long mySeed[624]
@@ -64,8 +64,7 @@ def DDMOU(settings, int FD,int perLoc):
 			overTime = 0
 			tCurr = 0
 			xCurr = myTwister.randNorm(C*.6,xStd)
-			xNoiseP = myTwister.randNorm(0,noiseSigma)
-			xNoiseN = myTwister.randNorm(0,noiseSigma)
+			xNoise = myTwister.randNorm(0,noiseSigma)
 			yCurrP = yBegin
 			yCurrN = yBegin
 			while yCurrP - yBegin < theta and yCurrN - yBegin < theta:
@@ -74,20 +73,23 @@ def DDMOU(settings, int FD,int perLoc):
 				xCurr = xCurr+dt*(C*.6 - xCurr)/xTau + xStd*sqrt(2*dt/xTau)*myTwister.randNorm(mean,std)
 				
 				# Create Noise Signals
+				# xNoiseP = xNoiseP - dt*xNoiseP/xTau + noiseSigma*sqrt(2*dt/xTau)*myTwister.randNorm(mean,std)
+				# xNoiseN = xNoiseN - dt*xNoiseN/xTau + noiseSigma*sqrt(2*dt/xTau)*myTwister.randNorm(mean,std)
+				
+				# Create Noise Signals
 				xNoiseP = xNoiseP - dt*xNoiseP/xTau + noiseSigma*sqrt(2*dt/xTau)*myTwister.randNorm(mean,std)
-				xNoiseN = xNoiseN - dt*xNoiseN/xTau + noiseSigma*sqrt(2*dt/xTau)*myTwister.randNorm(mean,std)
 				
 				# Integrate Preferred Integrator based on chop
 				if abs((xCurr+xNoiseP) + beta*yCurrP*K + B) < chop:
 					yCurrP = yCurrP
 				else:
-					yCurrP = yCurrP + dt/yTau*((xCurr+xNoiseP)/K + beta*yCurrP + A)
+					yCurrP = yCurrP + dt/yTau*((xCurr+xNoise)/K + beta*yCurrP + A)
 
 				# Integrate Preferred Integrator based on chop				
 				if abs(-(xCurr+xNoiseN) + beta*yCurrN*K + B) < chop:
 					yCurrN = yCurrN
 				else:
-					yCurrN = yCurrN + dt/yTau*(-(xCurr+xNoiseN)/K + beta*yCurrN + A)
+					yCurrN = yCurrN + dt/yTau*(-(xCurr+xNoise)/K + beta*yCurrN + A)
 				
 				# Ensure both trains remain positive
 				if yCurrP < 0:
