@@ -80,13 +80,13 @@ def DDMOU(settings, int FD,int perLoc):
 				xNoiseP = xNoiseP - dt*xNoiseP/xTau + noiseSigma*sqrt(2*dt/xTau)*myTwister.randNorm(mean,std)
 				
 				# Integrate Preferred Integrator based on chop
-				if abs((xCurr+xNoiseP) + beta*yCurrP*K + B) < chop:
+				if abs((xCurr+xNoise) + beta*yCurrP*K + B) < chop:
 					yCurrP = yCurrP
 				else:
 					yCurrP = yCurrP + dt/yTau*((xCurr+xNoise)/K + beta*yCurrP + A)
 
 				# Integrate Preferred Integrator based on chop				
-				if abs(-(xCurr+xNoiseN) + beta*yCurrN*K + B) < chop:
+				if abs(-(xCurr+xNoise) + beta*yCurrN*K + B) < chop:
 					yCurrN = yCurrN
 				else:
 					yCurrN = yCurrN + dt/yTau*(-(xCurr+xNoise)/K + beta*yCurrN + A)
