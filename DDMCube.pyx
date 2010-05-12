@@ -77,7 +77,7 @@ def DDMOU(settings, int FD,int perLoc):
 				# xNoiseN = xNoiseN - dt*xNoiseN/xTau + noiseSigma*sqrt(2*dt/xTau)*myTwister.randNorm(mean,std)
 				
 				# Create Noise Signals
-				xNoiseP = xNoiseP - dt*xNoiseP/xTau + noiseSigma*sqrt(2*dt/xTau)*myTwister.randNorm(mean,std)
+				xNoise = xNoise - dt*xNoise/xTau + noiseSigma*sqrt(2*dt/xTau)*myTwister.randNorm(mean,std)
 				
 				# Integrate Preferred Integrator based on chop
 				if abs((xCurr+xNoise) + beta*yCurrP*K + B) < chop:
