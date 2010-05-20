@@ -53,7 +53,7 @@ def DDMOU(settings, int FD,int perLoc):
 	for currentSettings in settingsIterator:
 		A, B, C, K, beta, chopHat, dt, noiseSigma, tMax, theta, xStd, xTau, yBegin, yTau = currentSettings		# Must be alphabetized, with capitol letters coming first!
 
-		xStd=sqrt(4.5*((20-.2*C) + (20+.4*C)))
+		xStd = sqrt(4.5*((20-.2*C) + (20+.4*C)))
 		chop = sqrt(xStd*xStd + noiseSigma*noiseSigma)*chopHat
 
 		if FD:

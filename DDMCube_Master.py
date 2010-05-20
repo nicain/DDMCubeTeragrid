@@ -59,7 +59,7 @@ at.printSettings(quickName, saveResultDir = saveResultDir)
 # Run the job:
 tBegin = time.mktime(time.localtime())
 pt.runPBS('python DDMCube_Slave.py',
-          ['DDMCube_Slave.py', settingsFileName, 'DDMCube.so'],
+          fileList = ['DDMCube_Slave.py', settingsFileName, 'DDMCube.so'],
           nodes=nodes,
           ppn=procsPerNode,
 		  repspp=repsPerProc,
@@ -68,8 +68,7 @@ pt.runPBS('python DDMCube_Slave.py',
 		  runType=runType,
           wallTime=wallTime,
 		  dryRun=dryRun,
-		  wallTimeEstCount=wallTimeEstCount,
-		  user=user)
+		  wallTimeEstCount=wallTimeEstCount)
 tEnd = time.mktime(time.localtime())
 
 if not dryRun == 1 and not runType == 'wallTimeEstimate':
