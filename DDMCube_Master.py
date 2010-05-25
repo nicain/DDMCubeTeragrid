@@ -68,6 +68,7 @@ pt.runPBS('python DDMCube_Slave.py',
 		  runType=runType,
           wallTime=wallTime,
 		  dryRun=dryRun,
+		  queue=queue,
 		  wallTimeEstCount=wallTimeEstCount)
 tEnd = time.mktime(time.localtime())
 
