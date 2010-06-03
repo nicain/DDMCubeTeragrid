@@ -73,7 +73,7 @@ pt.runPBS('python DDMCube_Slave.py',
 		  wallTimeEstCount=wallTimeEstCount)
 tEnd = time.mktime(time.localtime())
 
-if not dryRun == 1 and not runType == 'wallTimeEstimate':
+if not dryRun == 1 and not runType == 'wallTimeEstimate' and not waitForSims == 0:
 	# Collect results:
 	resultList = pt.getFromPickleJar(loadDir = outputDir, fileNameSubString = 'simResults.dat')
 	arrayLength = len(resultList[0][0])
