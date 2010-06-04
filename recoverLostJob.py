@@ -14,7 +14,7 @@ outputDir = sys.argv[1]
 settingsFile = sys.argv[2]
 
 # Read back recovery details to user:
-print 'Recovering job: ' + str(settingsFile)
+print 'Recovering job: `' + str(settingsFile)
 print '  From directory: ' + str(outputDir)
 
 # Split off uuid fomr settingFile:
@@ -39,7 +39,7 @@ numberOfJobs = [simsPerRep, simsPerRep*repsPerProc*procsPerNode*nodes]
 
 # Match incoming quickName against that from the settings file:
 if not jobQuickNameIn == quickName:
-	print 'Quicknames fomr input file and settings file dont match; aborting'
+	print 'Quicknames from input file and settings file dont match; aborting'
 	sys.exit()
 
 # Grab the name of the settings for the run:
