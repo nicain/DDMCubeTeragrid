@@ -17,12 +17,53 @@
 import pbsTools as pt
 import analysisTools as at
 import numpy as np
-import numpy, copy, os, pickle, math
+import numpy, copy, os, pickle, math, sys
+from math import sqrt as sqrt
+import pylab as pl
 
-# Settings:
+# Main Settings:
+DDMCubeDir = '~/Desktop/currentProjects/DDMCubeTeragrid'
 saveResultDir = 'NeuroeconomicOptimizeBackupRunData'
 outputDir = os.path.abspath(os.path.join(os.curdir,saveResultDir))
 settingsFile = 'NeuroeconomicOptimizeBackup-Booboo_30406946-ab98-4bf9-a313-e209ff2e3547.settings'
+saveFig = 1
+smoothBeta = 100
+
+# Plot Settings:
+yBegin = 0
+chopHatVals = np.array([0,1,1.5])
+betaPlotIndex = 2
+
+# Figure Saving Settings:
+saveFileName = 'tradeoffNegMarginalize.eps'
+figOutputDir = 'Default' # Change from "Default" to path if you want to specify.
+saveType = 'eps'		 #   Default is parent directory.
+transparentBackground = True
+
+# Font settings:
+fig_width = 3				# width in inches
+fontSize = 12
+labelSize = 10
+
+# Set up:
+currentDir = os.path.abspath(os.getcwd())
+DDMCubeDir = os.path.abspath(os.path.expanduser(DDMCubeDir))
+if figOutputDir == 'Default':
+	figOutputDir = os.path.abspath(os.pardir)
+os.chdir(DDMCubeDir)
+sys.path.append(os.getcwd())
+golden_mean = (sqrt(5)-1.0)/2.0         # Aesthetic ratio
+fig_height = fig_width*golden_mean      # height in inches
+fig_size =  [fig_width,fig_height]
+params = {'backend': 'ps',
+		  'axes.labelsize': fontSize,
+		  'text.fontsize': fontSize,
+		  'legend.fontsize': fontSize,
+		  'xtick.labelsize': labelSize,
+		  'ytick.labelsize': labelSize,
+		  'text.usetex': True,
+		  'figure.figsize': fig_size}
+pl.rcParams.update(params)
 
 ################################################################
 # Gather data:
@@ -137,8 +178,6 @@ def intErfAB(a, b, mu=0, sigma=1):
 marginalizeDim = 'beta'
 numOfValues = len(settings[marginalizeDim])
 
-print numOfValues
-
 betaStd = [.01,.02,.05]
 probDists = [0]*len(betaStd)
 betaVals = np.array(settings[marginalizeDim])
@@ -150,11 +189,6 @@ for i in range(len(probDists)):
 	probDists[i] = [0]*len(L)
 	for j in range(len(L)):
 		probDists[i][j] = intErfAB(L[j], R[j], sigma=betaStd[i])
-		
-print len(probDists[0])
-print len(L)
-print len(R)		
-print len(betaVals)
 
 finalMarginalCrossTimeCube = [0]*len(betaStd)
 finalMarginalResultCube = [0]*len(betaStd)
@@ -173,17 +207,65 @@ for i in range(len(betaStd)):
 # Now make Speed/Accuracy Tradeoff Plot:
 ################################################################
 
+# Define the smoothing function:
+def smooth(y,smoothBeta=smoothBeta):
+	m = len(y)
+	
+	p = pl.diff(pl.eye(m),3).transpose()
+	A = pl.eye(m)+smoothBeta*pl.dot(p.transpose(),p)
+	
+	smoothY = pl.solve(A, y)
+	
+	return smoothY
+
+# Set up plot window:
+pl.figure(1)
+pl.clf()
+LCushion = 0.19
+RCushion = .06
+BCushion = .21
+TCushion = .05
+pl.axes([LCushion, BCushion, 1-RCushion-LCushion, 1-TCushion-BCushion])
+
+# Initializations:
+sliceDict={'yBegin':yBegin}
+FC = [0]*len(chopHatVals)
+RT = [0]*len(chopHatVals)
+
+# Get data slices:
+for i in range(len(chopHatVals)):
+	sliceDict['chopHat'] = chopHatVals[i]
+	crossTimeDataThisSlice = finalMarginalCrossTimeCube[betaPlotIndex]
+	resultDataThisSlice = finalMarginalResultCube[betaPlotIndex]
+	crossDimsTemp = copy.copy(finalDimsMarginal)
+	for collapseDim in iter(sliceDict):
+		crossTimeDataThisSlice, resultDataThisSlice, crossDimsTemp = at.reduce1D(crossTimeDataThisSlice, resultDataThisSlice, crossDimsTemp, collapseDim, settings[collapseDim], sliceDict[collapseDim])
+	RT[i] = np.squeeze(crossTimeDataThisSlice)
+	FC[i] = np.squeeze(resultDataThisSlice)
+
+# Plot Data:
+for i in range(len(chopHatVals)):
+	pl.plot(RT[i], FC[i])
+
+#for i in range(len(chopHatVals)):
+#	pl.plot(smooth(RT[i]), smooth(FC[i]))
+
+# Set Axes:
+pl.xlabel('RT')
+pl.ylabel('FC')
 
 
+# Save figure:
+if saveFig == 1:
+	(pl.savefig(os.path.join(figOutputDir, saveFileName),
+		format = saveType))#,transparent = transparentBackground))
 
+################################################################################
+# Clean Up
+################################################################################
 
-
-
-
-
-
-
-
+# Change back directory:
+os.chdir(currentDir)
 
 
 
