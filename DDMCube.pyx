@@ -51,8 +51,9 @@ def DDMOU(settings, int FD,int perLoc):
 	# Parameter space loop:
 	counter = 0
 	for currentSettings in settingsIterator:
-		A, B, C, K, beta, chopHat, dt, noiseSigma, tMax, theta, xStd, xTau, yBegin, yTau = currentSettings		# Must be alphabetized, with capitol letters coming first!
+		A, B, CPost, CPre, K, beta, chopHat, dt, noiseSigma, tMax, tS, theta, xStd, xTau, yBegin, yTau = currentSettings		# Must be alphabetized, with capitol letters coming first!
 
+		C = CPre
 		xStd = sqrt(4.5*((20-.2*C) + (20+.4*C)))
 		chop = sqrt(xStd*xStd + noiseSigma*noiseSigma)*chopHat
 
@@ -70,6 +71,9 @@ def DDMOU(settings, int FD,int perLoc):
 			while yCurrP - yBegin < theta and yCurrN - yBegin < theta:
 				
 				# Create Input Signal
+				if tCurr > tS:
+					C = CPost
+				xStd = sqrt(4.5*((20-.2*C) + (20+.4*C)))
 				xCurr = xCurr+dt*(C*.6 - xCurr)/xTau + xStd*sqrt(2*dt/xTau)*myTwister.randNorm(mean,std)
 				
 				# Create Noise Signals
