@@ -52,7 +52,7 @@ def DDMOU(settings, int FD,int perLoc):
 	counter = 0
 	CPost = 0
 	for currentSettings in settingsIterator:
-		A, B, CPre, K, beta, chopHat, dt, noiseSigma, tFrac, tMax, theta, xStd, xTau, yBegin, yTau = currentSettings		# Must be alphabetized, with capitol letters coming first!
+		A, B, CPre, IUrg, K, beta, chopHat, dt, noiseSigma, tFrac, tMax, theta, xStd, xTau, yBegin, yTau = currentSettings		# Must be alphabetized, with capitol letters coming first!
 
 		chop = sqrt(xStd*xStd + noiseSigma*noiseSigma)*chopHat
 
@@ -86,13 +86,13 @@ def DDMOU(settings, int FD,int perLoc):
 				
 				# Integrate Preferred Integrator based on chop
 				if abs((xCurr+xNoise) + beta*yCurrP*K + B) < chop:
-					yCurrP = yCurrP
+					yCurrP = yCurrP + dt/yTau*A
 				else:
 					yCurrP = yCurrP + dt/yTau*((xCurr+xNoise)/K + beta*yCurrP + A)
 
 				# Integrate Preferred Integrator based on chop				
 				if abs(-(xCurr+xNoise) + beta*yCurrN*K + B) < chop:
-					yCurrN = yCurrN
+					yCurrN = yCurrN + dt/yTau*A
 				else:
 					yCurrN = yCurrN + dt/yTau*(-(xCurr+xNoise)/K + beta*yCurrN + A)
 				
