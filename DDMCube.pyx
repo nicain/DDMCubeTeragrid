@@ -23,8 +23,8 @@ def DDMOU(settings, int FD,int perLoc):
 	from numpy import zeros
 	
 	# C initializations
-	cdef float xCurr, tCurr, yCurrP, yCurrN, C, xStd, xTau, xNoise
-	cdef float dt, theta, crossTimes, results, chop, beta, K, yTau, A, B, yBegin, tMax, chopHat, noiseSigma
+	cdef float xCurr, tCurr, yCurrP, yCurrN, C, xStd, xTau, xNoise, CPre, CPost, tFrac
+	cdef float dt, theta, crossTimes, results, chop, beta, K, yTau, A, B, yBegin, tMax,chopHat, noiseSigma
 	cdef double mean = 0, std = 1
 	cdef unsigned long mySeed[624]
 	cdef c_MTRand myTwister
@@ -50,11 +50,10 @@ def DDMOU(settings, int FD,int perLoc):
 
 	# Parameter space loop:
 	counter = 0
+	CPost = 0
 	for currentSettings in settingsIterator:
-		A, B, CPost, CPre, K, beta, chopHat, dt, noiseSigma, tMax, tS, theta, xStd, xTau, yBegin, yTau = currentSettings		# Must be alphabetized, with capitol letters coming first!
+		A, B, CPre, K, beta, chopHat, dt, noiseSigma, tFrac, tMax, theta, xStd, xTau, yBegin, yTau = currentSettings		# Must be alphabetized, with capitol letters coming first!
 
-		C = CPre
-		xStd = sqrt(4.5*((20-.2*C) + (20+.4*C)))
 		chop = sqrt(xStd*xStd + noiseSigma*noiseSigma)*chopHat
 
 		if FD:
@@ -62,6 +61,8 @@ def DDMOU(settings, int FD,int perLoc):
 		crossTimes = 0
 		results = 0
 		for i in range(perLoc):
+			C = CPre
+			xStd = sqrt(4.5*((20-.2*C) + (20+.4*C)))
 			overTime = 0
 			tCurr = 0
 			xCurr = myTwister.randNorm(C*.6,xStd)
@@ -71,7 +72,7 @@ def DDMOU(settings, int FD,int perLoc):
 			while yCurrP - yBegin < theta and yCurrN - yBegin < theta:
 				
 				# Create Input Signal
-				if tCurr > tS:
+				if tCurr > tFrac*tMax:
 					C = CPost
 				xStd = sqrt(4.5*((20-.2*C) + (20+.4*C)))
 				xCurr = xCurr+dt*(C*.6 - xCurr)/xTau + xStd*sqrt(2*dt/xTau)*myTwister.randNorm(mean,std)
