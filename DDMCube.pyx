@@ -116,7 +116,7 @@ def DDMOU(settings, int FD,int perLoc):
 					results += 1
 			else:
 				if not(overTime):
-					if yCurrP - yBegin >= theta:
+					if (yCurrP - yBegin >= theta) and (yCurrN - yBegin < theta):
 						results += 1
 				else:
 					if yCurrP > yCurrN:
