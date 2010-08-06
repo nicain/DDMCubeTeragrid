@@ -23,7 +23,7 @@ def DDMOU(settings, int FD,int perLoc):
 	from numpy import zeros
 	
 	# C initializations
-	cdef float xCurr, tCurr, yCurrP, yCurrN, C, xStd, xTau, xNoise, CPre, CPost, tFrac
+	cdef float xCurr, tCurr, yCurrP, yCurrN, C, xStd, xTau, xNoise, CPre, CPost, tFrac, tieBreak
 	cdef float dt, theta, crossTimes, results, chop, beta, K, yTau, A, B, yBegin, tMax,chopHat, noiseSigma
 	cdef double mean = 0, std = 1
 	cdef unsigned long mySeed[624]
@@ -114,15 +114,25 @@ def DDMOU(settings, int FD,int perLoc):
 			if FD:
 				if yCurrP > yCurrN:
 					results += 1
+				elif yCurrP == yCurrN:
+					tieBreak = myTwister.randNorm(mean,std)
+					if tieBreak > 0:
+						results += 1
 			else:
 				if not(overTime):
 					if (yCurrP - yBegin >= theta) and (yCurrN - yBegin < theta):
 						results += 1
+					elif yCurrP == yCurrN:
+						tieBreak = myTwister.randNorm(mean,std)
+						if tieBreak > 0:
+							results += 1
 				else:
 					if yCurrP > yCurrN:
 						results += 1
-				#if not(overTime) and yCurrP - yBegin >= theta:
-					#results += 1
+					elif yCurrP == yCurrN:
+						tieBreak = myTwister.randNorm(mean,std)
+						if tieBreak > 0:
+							results += 1
 					
 					
 
