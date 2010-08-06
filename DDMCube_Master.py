@@ -74,18 +74,23 @@ pt.runPBS('python DDMCube_Slave.py',
 tEnd = time.mktime(time.localtime())
 
 if not dryRun == 1 and not runType == 'wallTimeEstimate' and not waitForSims == 0:
+
 	# Collect results:
 	resultList = pt.getFromPickleJar(loadDir = outputDir, fileNameSubString = 'simResults.dat')
 	arrayLength = len(resultList[0][0])
 
-	resultsArray = numpy.zeros(arrayLength, dtype=float)
-	crossTimesArray = numpy.zeros(arrayLength, dtype=float)
-	for i in range(len(resultList)):
-		resultsArray = resultsArray + resultList[i][0]
-		crossTimesArray = crossTimesArray + resultList[i][1]
+	resultsArray = [0]*arrayLength
+	crossTimesArray = [0]*arrayLength
+	for i in range(arrayLength):
+		resultsArray[i] = np.zeros(len(resultList)*numberOfJobs[1], dtype=float)
+		crossTimeArray[i] = np.zeros(len(resultList)*numberOfJobs[1], dtype=float)
+		counter = 0
+		for j in range(len(resultList)):
+			for k in range(numberOfJobs[1]):
+				resultsArray[i][counter] = resultList[i][0][k]
+				crossTimeArray[i][counter] = resultList[i][1][k]
+				counter += 1
 
-	crossTimesArray = crossTimesArray/numberOfJobs[1]
-	resultsArray = resultsArray/numberOfJobs[1]
 				
 	# Reshape results and save to output:	
 	params = settings.keys()

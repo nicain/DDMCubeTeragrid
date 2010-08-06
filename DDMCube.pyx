@@ -58,8 +58,9 @@ def DDMOU(settings, int FD,int perLoc):
 
 		if FD:
 			theta = 1000000000
-		crossTimes = 0
-		results = 0
+		crossTimes = np.zeros(perLoc)
+		results = np.zeros(perLoc)
+		counter2 = 0
 		for i in range(perLoc):
 			C = CPre
 			xStd = sqrt(4.5*((20-.2*C) + (20+.4*C)))
@@ -76,10 +77,6 @@ def DDMOU(settings, int FD,int perLoc):
 					C = CPost
 				xStd = sqrt(4.5*((20-.2*C) + (20+.4*C)))
 				xCurr = xCurr+dt*(C*.6 - xCurr)/xTau + xStd*sqrt(2*dt/xTau)*myTwister.randNorm(mean,std)
-				
-				# Create Noise Signals
-				# xNoiseP = xNoiseP - dt*xNoiseP/xTau + noiseSigma*sqrt(2*dt/xTau)*myTwister.randNorm(mean,std)
-				# xNoiseN = xNoiseN - dt*xNoiseN/xTau + noiseSigma*sqrt(2*dt/xTau)*myTwister.randNorm(mean,std)
 				
 				# Create Noise Signals
 				xNoise = xNoise - dt*xNoise/xTau + noiseSigma*sqrt(2*dt/xTau)*myTwister.randNorm(mean,std)
@@ -110,19 +107,17 @@ def DDMOU(settings, int FD,int perLoc):
 					overTime = 1
 					break
 
-			crossTimes += tCurr
+			crossTimes[i] += tCurr
 			if FD:
 				if yCurrP > yCurrN:
-					results += 1
+					results[i] += 1
 			else:
 				if not(overTime):
 					if (yCurrP - yBegin >= theta) and (yCurrN - yBegin < theta):
-						results += 1
+						results[i] += 1
 				else:
 					if yCurrP > yCurrN:
-						results += 1
-				#if not(overTime) and yCurrP - yBegin >= theta:
-					#results += 1
+						results[i] += 1
 					
 					
 
