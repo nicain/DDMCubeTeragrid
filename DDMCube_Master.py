@@ -77,6 +77,7 @@ if not dryRun == 1 and not runType == 'wallTimeEstimate' and not waitForSims == 
 
 	# Collect results:
 	resultList = pt.getFromPickleJar(loadDir = outputDir, fileNameSubString = 'simResults.dat')
+	print resultList
 	arrayLength = len(resultList[0][0])
 
 	resultsArray = [0]*arrayLength

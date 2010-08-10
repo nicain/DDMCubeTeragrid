@@ -24,7 +24,7 @@ def DDMOU(settings, int FD,int perLoc):
 	
 	# C initializations
 	cdef float xCurr, tCurr, yCurrP, yCurrN, C, xStd, xTau, xNoise, CPre, CPost, tFrac
-	cdef float dt, theta, crossTimes, results, chop, beta, K, yTau, A, B, yBegin, tMax,chopHat, noiseSigma
+	cdef float dt, theta, chop, beta, K, yTau, A, B, yBegin, tMax,chopHat, noiseSigma
 	cdef double mean = 0, std = 1
 	cdef unsigned long mySeed[624]
 	cdef c_MTRand myTwister
@@ -58,8 +58,8 @@ def DDMOU(settings, int FD,int perLoc):
 
 		if FD:
 			theta = 1000000000
-		crossTimes = np.zeros(perLoc)
-		results = np.zeros(perLoc)
+		crossTimes = zeros(perLoc)
+		results = zeros(perLoc)
 		counter2 = 0
 		for i in range(perLoc):
 			C = CPre
@@ -107,17 +107,17 @@ def DDMOU(settings, int FD,int perLoc):
 					overTime = 1
 					break
 
-			crossTimes[i] += tCurr
+			crossTimes[i] = tCurr
 			if FD:
 				if yCurrP > yCurrN:
-					results[i] += 1
+					results[i] = 1
 			else:
 				if not(overTime):
 					if (yCurrP - yBegin >= theta) and (yCurrN - yBegin < theta):
-						results[i] += 1
+						results[i] = 1
 				else:
 					if yCurrP > yCurrN:
-						results[i] += 1
+						results[i] = 1
 					
 					
 
