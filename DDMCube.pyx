@@ -39,8 +39,8 @@ def DDMOU(settings, int FD,int perLoc):
 		settingsList.append(settings[parameter])
 		totalLength *= len(settings[parameter])
 	settingsIterator = product.product(*settingsList)
-	resultsArray = zeros(totalLength, dtype=float)
-	crossTimesArray = zeros(totalLength, dtype=float)
+	resultsArray = [0]*totalLength
+	crossTimesArray = [0]*totalLength
 
 	# Initialization of random number generator:
 	myUUID = uuid.uuid4()
@@ -54,13 +54,14 @@ def DDMOU(settings, int FD,int perLoc):
 	for currentSettings in settingsIterator:
 		A, B, CPre, K, beta, chopHat, dt, noiseSigma, tFrac, tMax, theta, xStd, xTau, yBegin, yTau = currentSettings		# Must be alphabetized, with capitol letters coming first!
 
-		chop = sqrt(xStd*xStd + noiseSigma*noiseSigma)*chopHat
+		crossTimesArray[counter] = zeros(perLoc)
+		resultsArray[counter] = zeros(perLoc)
 
+		counter2 = 0
+		chop = sqrt(xStd*xStd + noiseSigma*noiseSigma)*chopHat
 		if FD:
 			theta = 1000000000
-		crossTimes = zeros(perLoc)
-		results = zeros(perLoc)
-		counter2 = 0
+
 		for i in range(perLoc):
 			C = CPre
 			xStd = sqrt(4.5*((20-.2*C) + (20+.4*C)))
@@ -107,23 +108,19 @@ def DDMOU(settings, int FD,int perLoc):
 					overTime = 1
 					break
 
-			crossTimes[i] = tCurr
+			crossTimesArray[counter][counter2] = tCurr
 			if FD:
 				if yCurrP > yCurrN:
-					results[i] = 1
+					resultsArray[counter][counter2] = 1
 			else:
 				if not(overTime):
 					if (yCurrP - yBegin >= theta) and (yCurrN - yBegin < theta):
-						results[i] = 1
+						resultsArray[counter][counter2] = 1
 				else:
 					if yCurrP > yCurrN:
-						results[i] = 1
-					
-					
-
-
-		resultsArray[counter] = results
-		crossTimesArray[counter] = crossTimes
+						resultsArray[counter][counter2] = 1
+			
+			counter2 += 1
 		counter += 1
 
 	return (resultsArray, crossTimesArray)

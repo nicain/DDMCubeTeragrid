@@ -77,30 +77,40 @@ if not dryRun == 1 and not runType == 'wallTimeEstimate' and not waitForSims == 
 
 	# Collect results:
 	resultList = pt.getFromPickleJar(loadDir = outputDir, fileNameSubString = 'simResults.dat')
-	print resultList
-	arrayLength = len(resultList[0][0])
+	N = len(resultList)
+	L = len(resultList[0][0])
+	K = len(resultList[0][0][0])
+	
+	resultsArray = [0]*L
+	crossTimesArray = [0]*L
+	for i in range(L):
+		resultsArray[i] = numpy.zeros(N*K, dtype=float)
+		crossTimesArray[i] = numpy.zeros(N*K, dtype=float)
 
-	resultsArray = [0]*arrayLength
-	crossTimesArray = [0]*arrayLength
-	for i in range(arrayLength):
-		resultsArray[i] = np.zeros(len(resultList)*numberOfJobs[1], dtype=float)
-		crossTimeArray[i] = np.zeros(len(resultList)*numberOfJobs[1], dtype=float)
+	for i in range(L):
 		counter = 0
-		for j in range(len(resultList)):
-			for k in range(numberOfJobs[1]):
-				resultsArray[i][counter] = resultList[i][0][k]
-				crossTimeArray[i][counter] = resultList[i][1][k]
-				counter += 1
+		for j in range(N):
+			for k in range(K):
 
+				resultsArray[i][counter] = resultList[j][0][i][k]
+				crossTimesArray[i][counter] = resultList[j][1][i][k]
+				counter += 1
 				
+	resultsArrayHash = range(len(resultsArray))
+	crossTimesArrayHash = range(len(crossTimesArray))
+	
 	# Reshape results and save to output:	
 	params = settings.keys()
 	params.sort()
 	newDims = [len(settings[parameter]) for parameter in params]
-	crossTimesArray = numpy.reshape(crossTimesArray,newDims)
-	resultsArray = numpy.reshape(resultsArray,newDims)
+	crossTimesArrayHash = numpy.reshape(crossTimesArrayHash,newDims)
+	resultsArrayHash = numpy.reshape(resultsArrayHash,newDims)
 	fOut = open(join(os.getcwd(),saveResultDir,quickName + '_' + str(myUUID) + '.dat'),'w')
-	pickle.dump((crossTimesArray, resultsArray, params),fOut)
+	pickle.dump((crossTimesArrayHash, resultsArrayHash, params),fOut)
+	fOut.close()
+	
+	fOut = open(join(os.getcwd(),saveResultDir,quickName + '_' + str(myUUID) + 'Hash.dat'),'w')
+	pickle.dump((crossTimesArray, resultsArray),fOut)
 	fOut.close()
 
 # Display Computation Time:
