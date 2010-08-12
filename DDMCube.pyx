@@ -46,7 +46,7 @@ def DDMOU(settings, int FD,int perLoc):
 	# Initialization of random number generator:
 	myUUID = uuid.uuid4()
 	random.seed(myUUID.int)
-	for i in range(624): mySeed[i] = random.randint(0,exp(20))
+	for i in range(624): mySeed[i] = random.randint(0,int(exp(21)))
 	myTwister.seed(mySeed)
 
 	# Parameter space loop:
