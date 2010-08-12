@@ -21,6 +21,7 @@ def DDMOU(settings, int FD,int perLoc):
 	# Import necessary python packages:
 	import random, uuid, os, product
 	from numpy import zeros
+	from math import exp
 	
 	# C initializations
 	cdef float xCurr, tCurr, yCurrP, yCurrN, C, xStd, xTau, xNoise, CPre, CPost, tFrac, tieBreak
@@ -45,7 +46,7 @@ def DDMOU(settings, int FD,int perLoc):
 	# Initialization of random number generator:
 	myUUID = uuid.uuid4()
 	random.seed(myUUID.int)
-	for i in range(624): mySeed[i] = random.randint(0,2**30)
+	for i in range(624): mySeed[i] = random.randint(0,exp(20))
 	myTwister.seed(mySeed)
 
 	# Parameter space loop:
