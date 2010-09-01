@@ -12,6 +12,7 @@ cdef extern from "MersenneTwister.h":
 cdef extern from "math.h":
 	float sqrt(float sqrtMe)
 	float abs(float absMe)
+	float exp(float expMe)
 
 ################################################################################
 ######################## Main function, the workhorse:  ########################
