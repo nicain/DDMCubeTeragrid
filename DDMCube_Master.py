@@ -38,6 +38,9 @@ elif quickNameSuffix == 'Abe':
 elif quickNameSuffix == 'Steele':
 	user='cainn'
 	runLocation = 'steele'
+elif quickNameSuffix == 'AMath':
+	user='nicain'
+	runLocation = 'cluster'
 
 # Beginning computation:
 quickName = quickNamePrefix + '-' + quickNameSuffix
