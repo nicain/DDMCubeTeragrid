@@ -53,7 +53,7 @@ def DDMOU(settings, int FD,int perLoc):
 	counter = 0
 	CPost = 0
 	for currentSettings in settingsIterator:
-		A, B, CPre, K, beta, chopHat, dt, noiseSigma, tFrac, tMax, theta, xStd, xTau, yBegin, yTau = currentSettings		# Must be alphabetized, with capitol letters coming first!
+		A, B, CPre, K, betaSigma, chopHat, dt, noiseSigma, tFrac, tMax, theta, xStd, xTau, yBegin, yTau = currentSettings		# Must be alphabetized, with capitol letters coming first!
 
 		crossTimesArray[counter] = zeros(perLoc)
 		resultsArray[counter] = zeros(perLoc)
@@ -70,6 +70,7 @@ def DDMOU(settings, int FD,int perLoc):
 			tCurr = 0
 			xCurr = myTwister.randNorm(C*.6,xStd)
 			xNoise = myTwister.randNorm(0,noiseSigma)
+			beta = myTwister.randNorm(0,betaSigma)
 			yCurrP = yBegin
 			yCurrN = yBegin
 			while yCurrP - yBegin < theta and yCurrN - yBegin < theta:
