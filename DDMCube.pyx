@@ -25,7 +25,7 @@ def DDMOU(settings, int FD,int perLoc):
 	
 	# C initializations
 	cdef float xCurr, tCurr, yCurrP, yCurrN, C, xStd, xTau, xNoise, CPre, CPost, tFrac
-	cdef float dt, theta, chop, beta, K, yTau, A, B, yBegin, tMax,chopHat, noiseSigma
+	cdef float dt, theta, chop, beta, K, yTau, A, B, yBegin, tMax,chopHat, noiseSigma, betaSigma, betaMu
 	cdef double mean = 0, std = 1
 	cdef unsigned long mySeed[624]
 	cdef c_MTRand myTwister
@@ -53,7 +53,7 @@ def DDMOU(settings, int FD,int perLoc):
 	counter = 0
 	CPost = 0
 	for currentSettings in settingsIterator:
-		A, B, CPre, K, betaSigma, chopHat, dt, noiseSigma, tFrac, tMax, theta, xStd, xTau, yBegin, yTau = currentSettings		# Must be alphabetized, with capitol letters coming first!
+		A, B, CPre, K, betaMu, betaSigma, chopHat, dt, noiseSigma, tFrac, tMax, theta, xStd, xTau, yBegin, yTau = currentSettings		# Must be alphabetized, with capitol letters coming first!
 
 		crossTimesArray[counter] = zeros(perLoc)
 		resultsArray[counter] = zeros(perLoc)
@@ -70,7 +70,7 @@ def DDMOU(settings, int FD,int perLoc):
 			tCurr = 0
 			xCurr = myTwister.randNorm(C*.6,xStd)
 			xNoise = myTwister.randNorm(0,noiseSigma)
-			beta = myTwister.randNorm(0,betaSigma)
+			beta = myTwister.randNorm(betaMu,betaSigma)
 			yCurrP = yBegin
 			yCurrN = yBegin
 			while yCurrP - yBegin < theta and yCurrN - yBegin < theta:
