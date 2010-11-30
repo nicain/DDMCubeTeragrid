@@ -81,22 +81,22 @@ def DDMOU(settings, int FD,int perLoc):
 				else:
 					C = COn
 				xStd = sqrt(4.5*((20-.2*C) + (20+.4*C)))
-				xCurr = xCurr+dt*(C*.6 - xCurr)/xTau + xStd*sqrt(2*dt/xTau)*myTwister.randNorm(mean,std)
+				xCurr = xCurr+dt*(C*.6 - xCurr)*xTau**(-1) + xStd*sqrt(2*dt*xTau**(-1))*myTwister.randNorm(mean,std)
 				
 				# Create Noise Signals
-				xNoise = xNoise - dt*xNoise/xTau + noiseSigma*sqrt(2*dt/xTau)*myTwister.randNorm(mean,std)
+				xNoise = xNoise - dt*xNoise*xTau**(-1) + noiseSigma*sqrt(2*dt*xTau**(-1))*myTwister.randNorm(mean,std)
 				
 				# Integrate Preferred Integrator based on chop
 				if abs((xCurr+xNoise) + beta*yCurrP*K + B) < chop:
-					yCurrP = yCurrP + dt/yTau*A
+					yCurrP = yCurrP + dt*yTau**(-1)*A
 				else:
-					yCurrP = yCurrP + dt/yTau*((xCurr+xNoise)/K + beta*yCurrP + A)
+					yCurrP = yCurrP + dt*yTau**(-1)*((xCurr+xNoise)*K**(-1) + beta*yCurrP + A)
 
 				# Integrate Preferred Integrator based on chop				
 				if abs(-(xCurr+xNoise) + beta*yCurrN*K + B) < chop:
-					yCurrN = yCurrN + dt/yTau*A
+					yCurrN = yCurrN + dt*(yTau)**(-1)*A
 				else:
-					yCurrN = yCurrN + dt/yTau*(-(xCurr+xNoise)/K + beta*yCurrN + A)
+					yCurrN = yCurrN + dt*yTau**(-1)*(-(xCurr+xNoise)*K**(-1) + beta*yCurrN + A)
 				
 				# Ensure both trains remain positive
 				if yCurrP < 0:
