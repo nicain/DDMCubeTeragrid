@@ -26,6 +26,7 @@ def DDMOU(settings, int FD,int perLoc):
 	# C initializations
 	cdef float xCurr, tCurr, yCurrP, yCurrN, C, xStd, xTau, xNoise, CPre, CPost, tFrac
 	cdef float dt, theta, chop, beta, K, yTau, A, B, yBegin, tMax,chopHat, noiseSigma, betaSigma, betaMu
+	cdef float xTauInv, yTauInv, KInv
 	cdef double mean = 0, std = 1
 	cdef unsigned long mySeed[624]
 	cdef c_MTRand myTwister
@@ -54,6 +55,11 @@ def DDMOU(settings, int FD,int perLoc):
 	CPost = 0
 	for currentSettings in settingsIterator:
 		A, B, CPre, K, betaMu, betaSigma, chopHat, dt, noiseSigma, tFrac, tMax, theta, xStd, xTau, yBegin, yTau = currentSettings		# Must be alphabetized, with capitol letters coming first!
+		
+		# Use reciprocal of taus, for speedup:
+		xTauInv = 1./xTau
+		yTauInv = 1./yTau
+		KInv = 1./K
 
 		crossTimesArray[counter] = zeros(perLoc)
 		resultsArray[counter] = zeros(perLoc)
@@ -79,22 +85,22 @@ def DDMOU(settings, int FD,int perLoc):
 				if tCurr > tFrac*tMax:
 					C = CPost
 				xStd = sqrt(4.5*((20-.2*C) + (20+.4*C)))
-				xCurr = xCurr+dt*(C*.6 - xCurr)/xTau + xStd*sqrt(2*dt/xTau)*myTwister.randNorm(mean,std)
+				xCurr = xCurr+dt*(C*.6 - xCurr)*xTauInv + xStd*sqrt(2*dt*xTauInv)*myTwister.randNorm(mean,std)
 				
 				# Create Noise Signals
-				xNoise = xNoise - dt*xNoise/xTau + noiseSigma*sqrt(2*dt/xTau)*myTwister.randNorm(mean,std)
+				xNoise = xNoise - dt*xNoise*xTauInv + noiseSigma*sqrt(2*dt*xTauInv)*myTwister.randNorm(mean,std)
 				
 				# Integrate Preferred Integrator based on chop
 				if abs((xCurr+xNoise) + beta*yCurrP*K + B) < chop:
-					yCurrP = yCurrP + dt/yTau*A
+					yCurrP = yCurrP + dt*yTauInv*A
 				else:
-					yCurrP = yCurrP + dt/yTau*((xCurr+xNoise)/K + beta*yCurrP + A)
+					yCurrP = yCurrP + dt*yTauInv*((xCurr+xNoise)*KInv + beta*yCurrP + A)
 
 				# Integrate Preferred Integrator based on chop				
 				if abs(-(xCurr+xNoise) + beta*yCurrN*K + B) < chop:
-					yCurrN = yCurrN + dt/yTau*A
+					yCurrN = yCurrN + dt*yTauInv*A
 				else:
-					yCurrN = yCurrN + dt/yTau*(-(xCurr+xNoise)/K + beta*yCurrN + A)
+					yCurrN = yCurrN + dt*yTauInv*(-(xCurr+xNoise)*KInv + beta*yCurrN + A)
 				
 				# Ensure both trains remain positive
 				if yCurrP < 0:
