@@ -11,7 +11,7 @@ cdef extern from "MersenneTwister.h":
 # External math functions that are needed:
 cdef extern from "math.h":
 	float sqrt(float sqrtMe)
-	float abs(float absMe)
+	float fabs(float absMe)
 
 ################################################################################
 ######################## Main function, the workhorse:  ########################
@@ -87,13 +87,13 @@ def DDMOU(settings, int FD,int perLoc):
 				xNoise = xNoise - dt*xNoise*xTau**(-1) + noiseSigma*sqrt(2*dt*xTau**(-1))*myTwister.randNorm(mean,std)
 				
 				# Integrate Preferred Integrator based on chop
-				if abs((xCurr+xNoise) + beta*yCurrP*K + B) < chop:
+				if fabs((xCurr+xNoise) + beta*yCurrP*K + B) < chop:
 					yCurrP = yCurrP + dt*yTau**(-1)*A
 				else:
 					yCurrP = yCurrP + dt*yTau**(-1)*((xCurr+xNoise)*K**(-1) + beta*yCurrP + A)
 
 				# Integrate Preferred Integrator based on chop				
-				if abs(-(xCurr+xNoise) + beta*yCurrN*K + B) < chop:
+				if fabs(-(xCurr+xNoise) + beta*yCurrN*K + B) < chop:
 					yCurrN = yCurrN + dt*(yTau)**(-1)*A
 				else:
 					yCurrN = yCurrN + dt*yTau**(-1)*(-(xCurr+xNoise)*K**(-1) + beta*yCurrN + A)
