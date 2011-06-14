@@ -30,6 +30,7 @@ def DDMOU(settings, int FD,int perLoc):
 	cdef unsigned long mySeed[624]
 	cdef c_MTRand myTwister
 	cdef int i, overTime
+	cdef float chophahahaha
 	
 	# Convert settings dictionary to iterator:
 	params = settings.keys()
@@ -55,7 +56,7 @@ def DDMOU(settings, int FD,int perLoc):
 	for currentSettings in settingsIterator:
 		A, B, COn, K, beta, chopHat, dt, noiseSigma, tBeginFrac, tFrac, tMax, theta, xStd, xTau, yBegin, yTau = currentSettings		# Must be alphabetized, with capitol letters coming first!
 
-		chop = sqrt(xStd*xStd + noiseSigma*noiseSigma)*chopHat
+#		chop = sqrt(xStd*xStd + noiseSigma*noiseSigma)*chopHat
 		tBegin = tBeginFrac*tMax*(1-tFrac)
 		if FD:
 			theta = 1000000000
@@ -87,13 +88,13 @@ def DDMOU(settings, int FD,int perLoc):
 				xNoise = xNoise - dt*xNoise*xTau**(-1) + noiseSigma*sqrt(2*dt*xTau**(-1))*myTwister.randNorm(mean,std)
 				
 				# Integrate Preferred Integrator based on chop
-				if fabs((xCurr+xNoise) + beta*yCurrP*K + B) < chop:
+				if fabs((xCurr+xNoise) + beta*yCurrP*K + B) < chopHat*sqrt(xStd*xStd + noiseSigma*noiseSigma):
 					yCurrP = yCurrP + dt*yTau**(-1)*A
 				else:
 					yCurrP = yCurrP + dt*yTau**(-1)*((xCurr+xNoise)*K**(-1) + beta*yCurrP + A)
 
 				# Integrate Preferred Integrator based on chop				
-				if fabs(-(xCurr+xNoise) + beta*yCurrN*K + B) < chop:
+				if fabs(-(xCurr+xNoise) + beta*yCurrN*K + B) < chopHat*sqrt(xStd*xStd + noiseSigma*noiseSigma):
 					yCurrN = yCurrN + dt*(yTau)**(-1)*A
 				else:
 					yCurrN = yCurrN + dt*yTau**(-1)*(-(xCurr+xNoise)*K**(-1) + beta*yCurrN + A)
