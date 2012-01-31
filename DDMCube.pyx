@@ -24,8 +24,8 @@ def DDMOU(settings, int FD,int perLoc):
     from math import exp
     
     # C initializations
-    cdef float xCurr, tCurr, yCurrP, yCurrN, C, xStd, xTau, xNoise, COn, CPost, tFrac, tieBreak,tBeginFrac, tBegin, CNull
-    cdef float dt, theta, crossTimes, results, chop, beta, K, yTau, A, B, tMax,chopHat, noiseSigma
+    cdef float xCurr, tCurr, yCurrP, yCurrN, C, xStd, xTau, xNoise, tieBreak, tMax
+    cdef float dt, theta, crossTimes, results, chop, beta, K, yTau,chopHat, noiseSigma
     cdef double mean = 0, std = 1
     cdef unsigned long mySeed[624]
     cdef c_MTRand myTwister
@@ -36,7 +36,6 @@ def DDMOU(settings, int FD,int perLoc):
     cdef float betaSigma
     cdef float numberOfNeurons
     cdef float kappa, p
-    cdef float tmp
     
     # Convert settings dictionary to iterator:
     params = settings.keys()
@@ -64,7 +63,6 @@ def DDMOU(settings, int FD,int perLoc):
 
         xTau = 20
         yTau = 20
-        
         kappa = K**(-1)
         
         xStd = sqrt(4.5*((20-.2*C) + (20+.4*C)))
@@ -88,10 +86,6 @@ def DDMOU(settings, int FD,int perLoc):
             while yCurrP < theta and yCurrN < theta:
                 
                 # Create Input Signal
-                if (tCurr < tBegin) or (tCurr > tFrac*tMax):
-                    C = CNull
-                else:
-                    C = COn
                 xStd = sqrt(4.5*((20-.2*C) + (20+.4*C)))
                 xCurr = xCurr+dt*(C*.6 - xCurr)*xTau**(-1) + xStd*sqrt(2*dt*xTau**(-1))*myTwister.randNorm(mean,std)
                 
