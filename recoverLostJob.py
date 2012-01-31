@@ -47,6 +47,7 @@ settings, FD, numberOfJobs, gitVersion = pt.unpickle(os.path.join(os.getcwd(),sa
 
 # Save the day:
 resultList = pt.getFromPickleJar(loadDir = outputDir, fileNameSubString = 'simResults.dat')
+print resultList
 arrayLength = len(resultList[0][0])
 
 resultsArray = numpy.zeros(arrayLength, dtype=float)

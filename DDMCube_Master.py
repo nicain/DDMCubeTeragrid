@@ -18,7 +18,7 @@ import analysisTools as at
 import pbsTools as pt
 
 # Compile cython extension DDMCube.pyx:
-call('python setup.py build_ext --inplace', shell=True)
+# call('python setup.py build_ext --inplace', shell=True)
 
 ################################################################################
 # Main function: 
@@ -41,6 +41,14 @@ elif quickNameSuffix == 'Steele':
 elif quickNameSuffix == 'AMath':
 	user='nicain'
 	runLocation = 'cluster'
+elif quickNameSuffix == 'Hyak':
+	user='nicain'
+	runLocation = 'hyak'
+
+if quickNameSuffix != 'Hyak':
+	pythonPath = ''
+else:
+	pythonPath = '/usr/lusers/nicain/epd-7.0-2-rh5-x86_64/bin/'
 
 # Beginning computation:
 quickName = quickNamePrefix + '-' + quickNameSuffix
@@ -61,7 +69,7 @@ at.printSettings(quickName, saveResultDir = saveResultDir)
 
 # Run the job:
 tBegin = time.mktime(time.localtime())
-pt.runPBS('python DDMCube_Slave.py',
+pt.runPBS(pythonPath + 'python DDMCube_Slave.py',
           fileList = ['DDMCube_Slave.py', settingsFileName, 'DDMCube.so'],
           nodes=nodes,
           ppn=procsPerNode,
