@@ -18,7 +18,7 @@ import analysisTools as at
 import pbsTools as pt
 
 # Compile cython extension DDMCube.pyx:
-# call('python setup.py build_ext --inplace', shell=True)
+call('python setup.py build_ext --inplace', shell=True)
 
 ################################################################################
 # Main function: 
