@@ -18,7 +18,7 @@ tar:
 	tar $(Config) -cf $(TarName) $(Files)
 
 pushHyak: tar
-	scp $(TarName) nicain@hyak.washington.edu:/usr/lusers/nicain/currentProjects/DDMCube
+	scp $(TarName) nicain@hyak.washington.edu:/usr/lusers/nicain/currentProjects/DDMCube_fullNeural
 
 pullHyak:
 	rsync -vprzt --stats --progress nicain@hyak.washington.edu:/gscratch/esci/nicain/currentProjects/DDMCube/savedResults-Hyak ./
