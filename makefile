@@ -21,5 +21,5 @@ pushHyak: tar
 	scp $(TarName) nicain@hyak.washington.edu:/usr/lusers/nicain/currentProjects/DDMCube_effective
 
 pullHyak:
-	rsync -vprzt --stats --progress nicain@hyak.washington.edu:/gscratch/esci/nicain/currentProjects/DDMCube_effective/savedResults-Hyak ./
+	rsync -vprzt --stats --progress nicain@hyak.washington.edu:/gscratch/riekesheabrown/nicain/currentProjects/DDMCube/savedResults-Hyak ./
 	consolidateResults
