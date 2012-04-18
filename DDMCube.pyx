@@ -11,8 +11,7 @@ cdef extern from "MersenneTwister.h":
 # External math functions that are needed:
 cdef extern from "math.h":
 	float sqrt(float sqrtMe)
-	float abs(float absMe)
-	float exp(float expMe)
+	float fabs(float absMe)
 
 ################################################################################
 ######################## Main function, the workhorse:  ########################
@@ -22,15 +21,21 @@ def DDMOU(settings, int FD,int perLoc):
 	# Import necessary python packages:
 	import random, uuid, os, product
 	from numpy import zeros
+	from math import exp
 	
 	# C initializations
-	cdef float xCurr, tCurr, yCurrP, yCurrN, C, xStd, xTau, xNoise, CPre, CPost, tFrac
-	cdef float dt, theta, chop, beta, K, yTau, A, B, yBegin, tMax,chopHat, noiseSigma, betaSigma, betaMu
+	cdef float xCurr, tCurr, yCurrP, yCurrN, C, xNoise, CPre, CPost, noiseSigma, xStd
+	cdef float theta, chop, beta, K, A, B, tMax,chopHat, betaSigma, betaMu
 	cdef float xTauInv, yTauInv, KInv
 	cdef double mean = 0, std = 1
 	cdef unsigned long mySeed[624]
 	cdef c_MTRand myTwister
 	cdef int i, overTime
+    cdef float dt = .1
+    cdef float tFrac = 1.0
+    cdef float xTau = 20.0
+    cdef float yBegin = 0.0
+    cdef float yTau = 20.0
 	
 	# Convert settings dictionary to iterator:
 	params = settings.keys()
@@ -54,23 +59,21 @@ def DDMOU(settings, int FD,int perLoc):
 	counter = 0
 	CPost = 0
 	for currentSettings in settingsIterator:
-		A, B, CPre, K, betaMu, betaSigma, chopHat, dt, noiseSigma, tFrac, tMax, theta, xStd, xTau, yBegin, yTau = currentSettings		# Must be alphabetized, with capitol letters coming first!
+		C, betaMu, betaSigma, chopHat, noiseSigma, tMax, theta = currentSettings		# Must be alphabetized, with capitol letters coming first!
 		
 		# Use reciprocal of taus, for speedup:
 		xTauInv = 1./xTau
 		yTauInv = 1./yTau
-		KInv = 1./K
+		KInv = 1./9.0
 
 		crossTimesArray[counter] = zeros(perLoc)
 		resultsArray[counter] = zeros(perLoc)
 
 		counter2 = 0
-		chop = sqrt(xStd*xStd + noiseSigma*noiseSigma)*chopHat
 		if FD:
 			theta = 1000000000
 
 		for i in range(perLoc):
-			C = CPre
 			xStd = sqrt(4.5*((20-.2*C) + (20+.4*C)))
 			overTime = 0
 			tCurr = 0
@@ -82,8 +85,6 @@ def DDMOU(settings, int FD,int perLoc):
 			while yCurrP - yBegin < theta and yCurrN - yBegin < theta:
 				
 				# Create Input Signal
-				if tCurr > tFrac*tMax:
-					C = CPost
 				xStd = sqrt(4.5*((20-.2*C) + (20+.4*C)))
 				xCurr = xCurr+dt*(C*.6 - xCurr)*xTauInv + xStd*sqrt(2*dt*xTauInv)*myTwister.randNorm(mean,std)
 				
@@ -91,16 +92,16 @@ def DDMOU(settings, int FD,int perLoc):
 				xNoise = xNoise - dt*xNoise*xTauInv + noiseSigma*sqrt(2*dt*xTauInv)*myTwister.randNorm(mean,std)
 				
 				# Integrate Preferred Integrator based on chop
-				if abs((xCurr+xNoise) + beta*yCurrP*K + B) < chop:
-					yCurrP = yCurrP + dt*yTauInv*A
+				if fabs((xCurr+xNoise) + beta*yCurrP*K) < chopHat*sqrt(xStd*xStd + noiseSigma*noiseSigma):
+					yCurrP = yCurrP
 				else:
-					yCurrP = yCurrP + dt*yTauInv*((xCurr+xNoise)*KInv + beta*yCurrP + A)
+					yCurrP = yCurrP + dt*yTauInv*((xCurr+xNoise)*KInv + beta*yCurrP)
 
 				# Integrate Preferred Integrator based on chop				
-				if abs(-(xCurr+xNoise) + beta*yCurrN*K + B) < chop:
-					yCurrN = yCurrN + dt*yTauInv*A
+				if fabs(-(xCurr+xNoise) + beta*yCurrN*K) < chopHat*sqrt(xStd*xStd + noiseSigma*noiseSigma):
+					yCurrN = yCurrN
 				else:
-					yCurrN = yCurrN + dt*yTauInv*(-(xCurr+xNoise)*KInv + beta*yCurrN + A)
+					yCurrN = yCurrN + dt*yTauInv*(-(xCurr+xNoise)*KInv + beta*yCurrN)
 				
 				# Ensure both trains remain positive
 				if yCurrP < 0:
