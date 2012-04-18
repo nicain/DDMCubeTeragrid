@@ -24,18 +24,17 @@ def DDMOU(settings, int FD,int perLoc):
     from math import exp
     
     # C initializations
-    cdef float xCurr, tCurr, yCurrP, yCurrN, C, xNoise, CPre, CPost, noiseSigma, xStd
-    cdef float theta, chop, beta, K, A, B, tMax,chopHat, betaSigma, betaBar
-    cdef float xTauInv, yTauInv, KInv
+    cdef float xCurr, tCurr, yCurrP, yCurrN, C, xNoise, CPre, noiseSigma, xStd
+    cdef float theta, chop, beta, A, B, tMax,chopHat, betaSigma, betaBar
+    cdef float dt = .1
+    cdef float K = 9.0
+    cdef float yTau = 20.0
+    cdef float yBegin = 0.0
+    cdef float xTau = 20.0
     cdef double mean = 0, std = 1
     cdef unsigned long mySeed[624]
     cdef c_MTRand myTwister
     cdef int i, overTime
-    cdef float dt = .1
-    cdef float tFrac = 1.0
-    cdef float xTau = 20.0
-    cdef float yBegin = 0.0
-    cdef float yTau = 20.0
     
     # Convert settings dictionary to iterator:
     params = settings.keys()
@@ -57,14 +56,8 @@ def DDMOU(settings, int FD,int perLoc):
 
     # Parameter space loop:
     counter = 0
-    CPost = 0
     for currentSettings in settingsIterator:
         C, betaBar, betaSigma, chopHat, noiseSigma, tMax, theta = currentSettings        # Must be alphabetized, with capitol letters coming first!
-        
-        # Use reciprocal of taus, for speedup:
-        xTauInv = 1./xTau
-        yTauInv = 1./yTau
-        KInv = 1./9.0
 
         crossTimesArray[counter] = zeros(perLoc)
         resultsArray[counter] = zeros(perLoc)
@@ -72,9 +65,10 @@ def DDMOU(settings, int FD,int perLoc):
         counter2 = 0
         if FD:
             theta = 1000000000
+        
 
         for i in range(perLoc):
-            beta = myTwister.randNorm(betaBar,betaSigma)
+            beta = myTwister.randNorm(betaBar, betaSigma)
             xStd = sqrt(4.5*((20-.2*C) + (20+.4*C)))
             overTime = 0
             tCurr = 0
@@ -86,22 +80,22 @@ def DDMOU(settings, int FD,int perLoc):
                 
                 # Create Input Signal
                 xStd = sqrt(4.5*((20-.2*C) + (20+.4*C)))
-                xCurr = xCurr+dt*(C*.6 - xCurr)*xTauInv + xStd*sqrt(2*dt*xTauInv)*myTwister.randNorm(mean,std)
+                xCurr = xCurr+dt*(C*.6 - xCurr)*xTau**(-1) + xStd*sqrt(2*dt*xTau**(-1))*myTwister.randNorm(mean,std)
                 
                 # Create Noise Signals
-                xNoise = xNoise - dt*xNoise*xTauInv + noiseSigma*sqrt(2*dt*xTauInv)*myTwister.randNorm(mean,std)
+                xNoise = xNoise - dt*xNoise*xTau**(-1) + noiseSigma*sqrt(2*dt*xTau**(-1))*myTwister.randNorm(mean,std)
                 
                 # Integrate Preferred Integrator based on chop
-                if fabs((xCurr+xNoise) + beta*yCurrP*K) < chopHat*sqrt(xStd*xStd + noiseSigma*noiseSigma):
-                    yCurrP = yCurrP
+                if fabs((xCurr+xNoise) + beta*yCurrP*K + 0) < chopHat*sqrt(xStd*xStd + noiseSigma*noiseSigma):
+                    yCurrP = yCurrP + 0
                 else:
-                    yCurrP = yCurrP + dt*yTauInv*((xCurr+xNoise)*KInv + beta*yCurrP)
+                    yCurrP = yCurrP + dt*yTau**(-1)*((xCurr+xNoise)*K**(-1) + beta*yCurrP + 0)
 
                 # Integrate Preferred Integrator based on chop                
-                if fabs(-(xCurr+xNoise) + beta*yCurrN*K) < chopHat*sqrt(xStd*xStd + noiseSigma*noiseSigma):
-                    yCurrN = yCurrN
+                if fabs(-(xCurr+xNoise) + beta*yCurrN*K + 0) < chopHat*sqrt(xStd*xStd + noiseSigma*noiseSigma):
+                    yCurrN = yCurrN + 0
                 else:
-                    yCurrN = yCurrN + dt*yTauInv*(-(xCurr+xNoise)*KInv + beta*yCurrN)
+                    yCurrN = yCurrN + dt*yTau**(-1)*(-(xCurr+xNoise)*K**(-1) + beta*yCurrN + 0)
                 
                 # Ensure both trains remain positive
                 if yCurrP < 0:
