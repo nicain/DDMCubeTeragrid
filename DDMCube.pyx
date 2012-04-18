@@ -74,12 +74,12 @@ def DDMOU(settings, int FD,int perLoc):
             theta = 1000000000
 
         for i in range(perLoc):
+            beta = myTwister.randNorm(betaBar,betaSigma)
             xStd = sqrt(4.5*((20-.2*C) + (20+.4*C)))
             overTime = 0
             tCurr = 0
             xCurr = myTwister.randNorm(C*.6,xStd)
             xNoise = myTwister.randNorm(0,noiseSigma)
-            beta = myTwister.randNorm(betaBar,betaSigma)
             yCurrP = yBegin
             yCurrN = yBegin
             while yCurrP - yBegin < theta and yCurrN - yBegin < theta:
