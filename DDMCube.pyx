@@ -98,10 +98,10 @@ def DDMOU(settings, int FD,int perLoc):
                     yCurrN = yCurrN + dt*yTau**(-1)*(-(xCurr+xNoise)*K**(-1) + beta*yCurrN + 0)
                 
                 # Ensure both trains remain positive
-                #if yCurrP < 0:
-                #    yCurrP = 0
-                #if yCurrN < 0:
-                #    yCurrN = 0
+                if yCurrP < 0:
+                    yCurrP = 0
+                if yCurrN < 0:
+                    yCurrN = 0
                 
                 # Update Time Step
                 tCurr=tCurr+dt
