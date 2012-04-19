@@ -112,7 +112,6 @@ def DDMOU(settings, int FD,int perLoc):
                     break
 
             crossTimes += tCurr
-            print tCurr
             if FD:
                 if yCurrP > yCurrN:
                     results += 1
