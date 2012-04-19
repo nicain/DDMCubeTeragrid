@@ -70,6 +70,7 @@ def DDMOU(settings, int FD,int perLoc):
         for i in range(perLoc):
             beta = myTwister.randNorm(betaBar, betaSigma)
             xStd = sqrt(4.5*((20-.2*C) + (20+.4*C)))
+            chop = chopHat*sqrt(4.5*((20-.2*0) + (20+.4*0)) + noiseSigma**2)
             overTime = 0
             tCurr = 0
             xCurr = myTwister.randNorm(C*.6,xStd)
@@ -86,13 +87,13 @@ def DDMOU(settings, int FD,int perLoc):
                 xNoise = xNoise - dt*xNoise*xTau**(-1) + noiseSigma*sqrt(2*dt*xTau**(-1))*myTwister.randNorm(mean,std)
                 
                 # Integrate Preferred Integrator based on chop
-                if fabs((xCurr+xNoise) + beta*yCurrP*K + 0) < chopHat*sqrt(xStd*xStd + noiseSigma*noiseSigma):
+                if fabs((xCurr+xNoise) + beta*yCurrP*K + 0) < chop:
                     yCurrP = yCurrP + 0
                 else:
                     yCurrP = yCurrP + dt*yTau**(-1)*((xCurr+xNoise)*K**(-1) + beta*yCurrP + 0)
 
                 # Integrate Preferred Integrator based on chop                
-                if fabs(-(xCurr+xNoise) + beta*yCurrN*K + 0) < chopHat*sqrt(xStd*xStd + noiseSigma*noiseSigma):
+                if fabs(-(xCurr+xNoise) + beta*yCurrN*K + 0) < chop:
                     yCurrN = yCurrN + 0
                 else:
                     yCurrN = yCurrN + dt*yTau**(-1)*(-(xCurr+xNoise)*K**(-1) + beta*yCurrN + 0)
