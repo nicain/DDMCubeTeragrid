@@ -111,7 +111,7 @@ def DDMOU(settings, int FD,int perLoc):
                     overTime = 1
                     break
 
-            crossTimes += tCurr
+            crossTimes += 3#tCurr
             if FD:
                 if yCurrP > yCurrN:
                     results += 1
