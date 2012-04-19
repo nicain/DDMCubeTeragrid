@@ -98,7 +98,7 @@ if not dryRun == 1 and not runType == 'wallTimeEstimate' and not waitForSims == 
 	crossTimesArray = crossTimesArray/numberOfJobs[1]
 	resultsArray = resultsArray/numberOfJobs[1]
 				
-	# Reshape results and save to output:	
+	# Reshape results and save to output:
 	params = settings.keys()
 	params.sort()
 	newDims = [len(settings[parameter]) for parameter in params]
