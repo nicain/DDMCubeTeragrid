@@ -94,7 +94,7 @@ if not dryRun == 1 and not runType == 'wallTimeEstimate' and not waitForSims == 
 	for i in range(len(resultList)):
 		resultsArray = resultsArray + resultList[i][0]
 		crossTimesArray = crossTimesArray + resultList[i][1]
-
+    
 	crossTimesArray = crossTimesArray/numberOfJobs[1]
 	resultsArray = resultsArray/numberOfJobs[1]
 				
