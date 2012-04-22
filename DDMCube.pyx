@@ -25,7 +25,7 @@ def DDMOU(settings, int FD,int perLoc):
     
     # C initializations
     cdef float xCurr, tCurr, yCurrP, yCurrN, C, xNoise, CPre, noiseSigma, xStd
-    cdef float theta, chop, beta, A, B, tMax,chopHat, betaSigma, betaBar
+    cdef float thetaBegin, thetaHalf, thetaSS, chop, beta, A, B, tMax,chopHat, betaSigma, betaBar
     cdef float dt = .1
     cdef float K = 9.0
     cdef float yTau = 20.0
@@ -57,7 +57,7 @@ def DDMOU(settings, int FD,int perLoc):
     # Parameter space loop:
     counter = 0
     for currentSettings in settingsIterator:
-        C, betaBar, betaSigma, chopHat, noiseSigma, tMax, theta = currentSettings        # Must be alphabetized, with capitol letters coming first!
+        C, betaBar, betaSigma, chopHat, noiseSigma, tMax, thetaBegin, thetaHalf, thetaSS = currentSettings        # Must be alphabetized, with capitol letters coming first!
 
         crossTimesArray[counter] = zeros(perLoc)
         resultsArray[counter] = zeros(perLoc)
@@ -76,7 +76,7 @@ def DDMOU(settings, int FD,int perLoc):
             xNoise = myTwister.randNorm(0,noiseSigma)
             yCurrP = yBegin
             yCurrN = yBegin
-            while yCurrP - yBegin < theta and yCurrN - yBegin < theta:
+            while yCurrP - yBegin < (thetaBegin - (thetaBegin - thetaSS)*tCurr/(tCurr + thetaHalf)) and yCurrN - yBegin < (thetaBegin - (thetaBegin - thetaSS)*tCurr/(tCurr + thetaHalf)):
                 
                 # Create Input Signal
                 xStd = sqrt(4.5*((20-.2*C) + (20+.4*C)))
