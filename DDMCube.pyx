@@ -76,7 +76,7 @@ def DDMOU(settings, int FD,int perLoc):
             xNoise = myTwister.randNorm(0,noiseSigma)
             yCurrP = yBegin
             yCurrN = yBegin
-            while yCurrP - yBegin < theta and yCurrN - yBegin < theta:
+            while fabs(yCurrP) < theta:
                 
                 # Create Input Signal
                 xStd = sqrt(4.5*((20-.2*C) + (20+.4*C)))
@@ -92,16 +92,16 @@ def DDMOU(settings, int FD,int perLoc):
                     yCurrP = yCurrP + dt*yTau**(-1)*((xCurr+xNoise)*K**(-1) + beta*yCurrP + 0)
 
                 # Integrate Preferred Integrator based on chop                
-                if fabs(-(xCurr+xNoise) + beta*yCurrN*K + 0) < chopHat*sqrt(xStd*xStd + noiseSigma*noiseSigma):
-                    yCurrN = yCurrN + 0
-                else:
-                    yCurrN = yCurrN + dt*yTau**(-1)*(-(xCurr+xNoise)*K**(-1) + beta*yCurrN + 0)
+#                if fabs(-(xCurr+xNoise) + beta*yCurrN*K + 0) < chopHat*sqrt(xStd*xStd + noiseSigma*noiseSigma):
+#                    yCurrN = yCurrN + 0
+#                else:
+#                    yCurrN = yCurrN + dt*yTau**(-1)*(-(xCurr+xNoise)*K**(-1) + beta*yCurrN + 0)
                 
                 # Ensure both trains remain positive
-                if yCurrP < 0:
-                    yCurrP = 0
-                if yCurrN < 0:
-                    yCurrN = 0
+#                if yCurrP < 0:
+#                    yCurrP = 0
+#                if yCurrN < 0:
+#                    yCurrN = 0
                 
                 # Update Time Step
                 tCurr=tCurr+dt
@@ -112,8 +112,8 @@ def DDMOU(settings, int FD,int perLoc):
                     break
 
             crossTimes += tCurr
-            if FD:
-                if yCurrP > yCurrN:
+            if FD:                  # This code is FD only!
+                if yCurrP > 0:
                     results += 1
                 elif yCurrP == yCurrN:
                     tieBreak = myTwister.randNorm(mean,std)
