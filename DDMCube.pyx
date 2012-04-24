@@ -58,7 +58,7 @@ def DDMOU(settings, int FD,int perLoc):
     # Parameter space loop:
     counter = 0
     for currentSettings in settingsIterator:
-        SNR, deltaT, chopHat, tMax = currentSettings        # Must be alphabetized, with capitol letters coming first!
+        SNR, chopHat, deltaT, tMax = currentSettings        # Must be alphabetized, with capitol letters coming first!
 
         results = 0
         for i in range(perLoc):
@@ -66,12 +66,14 @@ def DDMOU(settings, int FD,int perLoc):
             yCurrP = 0
             while tCurr < tMax:
 
+#                print yCurrP
+
                 xCurr = myTwister.randNorm(SNR,1.0)
-                if xCurr >= chopHat:
+                if fabs(xCurr) >= chopHat:
                     yCurrP += xCurr
                 
                 # Update Time Step
-                tCurr=tCurr+dt
+                tCurr=tCurr+deltaT
 
 
 
