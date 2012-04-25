@@ -25,7 +25,7 @@ def DDMOU(settings, int FD,int perLoc):
     
     # C initializations
     cdef float xCurr, tCurr, yCurrP, yCurrN, C, xStd, xNoise, CPost, tieBreak, tBegin, CNull
-    cdef float theta, crossTimes, results, chop, beta, betaBar, betaSigma, A, B, tMax,chopHat, noiseSigma, SNR
+    cdef float theta, crossTimes, results, chop, beta, betaBar, betaSigma, A, B,chopHat, noiseSigma, SNR
     cdef float dt = .1
     cdef float K = 9.0
     cdef float yTau = 20.0
@@ -35,7 +35,7 @@ def DDMOU(settings, int FD,int perLoc):
     cdef unsigned long mySeed[624]
     cdef c_MTRand myTwister
     cdef int i, overTime
-    cdef float chophahahaha
+    cdef float tMax = 10000
     
     # Convert settings dictionary to iterator:
     params = settings.keys()
@@ -58,15 +58,14 @@ def DDMOU(settings, int FD,int perLoc):
     # Parameter space loop:
     counter = 0
     for currentSettings in settingsIterator:
-        SNR, chopHat, deltaT, tMax = currentSettings        # Must be alphabetized, with capitol letters coming first!
+        SNR, chopHat, deltaT, theta = currentSettings        # Must be alphabetized, with capitol letters coming first!
 
         results = 0
         for i in range(perLoc):
             tCurr = 0
             yCurrP = 0
-            while tCurr < tMax:
+            while fabs(tCurr) < theta:
 
-#                print yCurrP
 
                 xCurr = myTwister.randNorm(SNR,1.0)
                 if fabs(xCurr) >= chopHat:
@@ -84,6 +83,12 @@ def DDMOU(settings, int FD,int perLoc):
                 tieBreak = myTwister.randNorm(mean,std)
                 if tieBreak > 0:
                     results += 1
+        
+            crossTimes += tCurr
+    
+        resultsArray[counter] = results
+        crossTimesArray[counter] = crossTimes
+        counter += 1
         
 ##        chop = sqrt(xStd*xStd + noiseSigma*noiseSigma)*chopHat
 #        tBegin = 0
@@ -162,8 +167,6 @@ def DDMOU(settings, int FD,int perLoc):
                     
 
 
-        resultsArray[counter] = results
-        crossTimesArray[counter] = -1
-        counter += 1
+
 
     return (resultsArray, crossTimesArray)
