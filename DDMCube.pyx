@@ -36,6 +36,7 @@ def DDMOU(settings, int FD,int perLoc):
     cdef c_MTRand myTwister
     cdef int i, overTime
     cdef float tMax = 10000
+    cdef float deltaT
     
     # Convert settings dictionary to iterator:
     params = settings.keys()
