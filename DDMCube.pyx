@@ -62,6 +62,7 @@ def DDMOU(settings, int FD,int perLoc):
         SNR, chopHat, deltaT, theta = currentSettings        # Must be alphabetized, with capitol letters coming first!
 
         results = 0
+        crossTimes = 0
         for i in range(perLoc):
             tCurr = 0
             yCurrP = 0
