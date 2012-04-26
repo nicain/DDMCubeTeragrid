@@ -65,8 +65,7 @@ def DDMOU(settings, int FD,int perLoc):
         for i in range(perLoc):
             tCurr = 0
             yCurrP = 0
-            while fabs(tCurr) < theta:
-
+            while fabs(yCurrP) < theta:
 
                 xCurr = myTwister.randNorm(SNR,1.0)
                 if fabs(xCurr) >= chopHat:
@@ -74,8 +73,6 @@ def DDMOU(settings, int FD,int perLoc):
                 
                 # Update Time Step
                 tCurr=tCurr+deltaT
-
-
 
 
             if yCurrP > 0:
