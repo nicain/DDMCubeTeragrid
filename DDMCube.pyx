@@ -56,17 +56,22 @@ def DDMOU(settings, int FD,int perLoc):
 	for currentSettings in settingsIterator:
 		A, B, COn, K, beta, chopHat, dt, noiseSigma, tBeginFrac, tFrac, tMax, theta, xStd, xTau, yBegin, yTau = currentSettings		# Must be alphabetized, with capitol letters coming first!
 
-#		chop = sqrt(xStd*xStd + noiseSigma*noiseSigma)*chopHat
+
+        # Initialize for current loop
 		tBegin = tBeginFrac*tMax*(1-tFrac)
 		if FD:
 			theta = 1000000000
 		crossTimes = 0
 		results = 0
+
+        # Loop across number of sims, at this point in parameter space
 		for i in range(perLoc):
 			if tBegin == 0:
 				C = COn
 			else:
 				C = CNull
+        
+            # Set input standard deviation, pre additive noise
 			xStd = sqrt(4.5*((20-.2*C) + (20+.4*C)))
 			overTime = 0
 			tCurr = 0
@@ -74,6 +79,8 @@ def DDMOU(settings, int FD,int perLoc):
 			xNoise = myTwister.randNorm(0,noiseSigma)
 			yCurrP = yBegin
 			yCurrN = yBegin
+                    
+            # Loop until threshold crossing:
 			while yCurrP - yBegin < theta and yCurrN - yBegin < theta:
 				
 				# Create Input Signal
@@ -100,10 +107,10 @@ def DDMOU(settings, int FD,int perLoc):
 					yCurrN = yCurrN + dt*yTau**(-1)*(-(xCurr+xNoise)*K**(-1) + beta*yCurrN + A)
 				
 				# Ensure both trains remain positive
-				#if yCurrP < 0:
-				#	yCurrP = 0
-				#if yCurrN < 0:
-				#	yCurrN = 0
+				if yCurrP < 0:
+					yCurrP = 0
+				if yCurrN < 0:
+					yCurrN = 0
 				
 				# Update Time Step
 				tCurr=tCurr+dt
@@ -130,6 +137,8 @@ def DDMOU(settings, int FD,int perLoc):
 						if tieBreak > 0:
 							results += 1
 				else:
+                    
+                    # A tie happend; break that tie
 					if yCurrP > yCurrN:
 						results += 1
 					elif yCurrP == yCurrN:
@@ -139,7 +148,7 @@ def DDMOU(settings, int FD,int perLoc):
 					
 					
 
-
+        # Record results:
 		resultsArray[counter] = results
 		crossTimesArray[counter] = crossTimes
 		counter += 1
