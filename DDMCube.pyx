@@ -116,7 +116,7 @@ def DDMOU(settings, int FD,int perLoc):
 #                    yCurrN = yCurrN + dt*yTau**(-1)*(yCurrN*beta + beta*(rMin+rMax)*(2*numberOfNeurons)**(-1) + kappa*(-(xCurr+xNoise)))
 
                 yCurrPSum = yCurrP.sum()
-                yCurrNSum = yCurrN.sum()
+                yCurrNSum = yCurrN.sum() 
                 
 
                 
