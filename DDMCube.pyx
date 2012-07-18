@@ -42,6 +42,8 @@ def DDMOU(settings, int FD,int perLoc):
     cdef float kappa, p, a
     cdef float rMin = 0
     cdef float rMax = 50
+    cdef float pqr
+    cdef f
     
     # Convert settings dictionary to iterator:
     params = settings.keys()
@@ -65,11 +67,19 @@ def DDMOU(settings, int FD,int perLoc):
     counter = 0
     CNull = 0
     for currentSettings in settingsIterator:
-        C, K, betaSigma, chopHat, dt, noiseSigma, numberOfNeurons, tMax, theta = currentSettings        # Must be alphabetized, with capitol letters coming first!
+        C, K, betaSigma, chopHat, dt, f, noiseSigma, numberOfNeurons, tMax, theta = currentSettings        # Must be alphabetized, with capitol letters coming first!
         
         yCurrP = np.zeros(numberOfNeurons)
         yCurrN = np.zeros(numberOfNeurons)
+        
+        
+
+        
+
+        
         linearRange = np.array(range(0,numberOfNeurons))
+
+
         
         xTau = 20
         yTau = 20
@@ -79,6 +89,12 @@ def DDMOU(settings, int FD,int perLoc):
         xStd = sqrt(4.5*((20-.2*C) + (20+.4*C)))
         
         p = chopHat*sqrt(xStd*xStd + noiseSigma*noiseSigma)*2*numberOfNeurons*kappa*(rMax-rMin)**(-1);
+        pqr = p # as q=1, above
+        
+        # Set up Biases, and possibly a random jitter:
+        biasVals =  pqr*(rMax+rMin)/2 + (linearRange-1)*rMax + (numberOfNeurons-linearRange)*rMin;
+        for i in range(len(biasVals)):
+            biasVals += f*pqr*(rMax+rMin)/2*myTwister.randNorm(0,1)
         
         if FD:
             theta = 1000000000
@@ -120,11 +136,13 @@ def DDMOU(settings, int FD,int perLoc):
                 
 
                 
-                yCurrP = yCurrP + dt*yTau**(-1)*(-yCurrP + rMin + (rMax-rMin)*np.array(p/q*yCurrP+(1+beta)*(yCurrPSum-yCurrP)+a*(xCurr+xNoise) - ((p/q-1)*(rMax+rMin)/2 + numberOfNeurons*rMin + 
-                                                 (rMax - rMin)*(linearRange) + (rMax-rMin)/2)>0,dtype=float))
+                yCurrP = yCurrP + dt*yTau**(-1)*(-yCurrP + rMin + (rMax-rMin)*np.array(p/q*yCurrP+(1+beta)*(yCurrPSum-yCurrP)+a*(xCurr+xNoise) - (
+                                    biasVals #(p/q-1)*(rMax+rMin)/2 + numberOfNeurons*rMin + (rMax - rMin)*(linearRange) + (rMax-rMin)/2
+                                                                                                                                                 )>0,dtype=float))
                 
-                yCurrN = yCurrN + dt*yTau**(-1)*(-yCurrN + rMin + (rMax-rMin)*np.array(p/q*yCurrN+(1+beta)*(yCurrNSum-yCurrP)+a*(-(xCurr+xNoise)) - ((p/q-1)*(rMax+rMin)/2 + numberOfNeurons*rMin + 
-                                                 (rMax - rMin)*(linearRange) + (rMax-rMin)/2)>0,dtype=float))
+                yCurrN = yCurrN + dt*yTau**(-1)*(-yCurrN + rMin + (rMax-rMin)*np.array(p/q*yCurrN+(1+beta)*(yCurrNSum-yCurrP)+a*(-(xCurr+xNoise)) - (
+                                    biasVals #(p/q-1)*(rMax+rMin)/2 + numberOfNeurons*rMin + (rMax - rMin)*(linearRange) + (rMax-rMin)/2
+                                                                                                                                                 )>0,dtype=float))
                                                                                                                                                             
 
                         
